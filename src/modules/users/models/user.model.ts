@@ -15,6 +15,18 @@ export class User extends Model {
     password: string
 
     // @Column
+    // avatar: string
+    //
+    // @Column
+    // images: string
+
+    // @Column
+    // posts: string
+
+    // @Column
+    // comments: string
+
+    // @Column
     // role: string
 
     // @Column

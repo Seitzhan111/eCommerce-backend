@@ -2,8 +2,8 @@ import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
 import {User} from "./models/user.model";
 import * as bcrypt from 'bcrypt'
-import {CreateUserDTO} from "./dto";
-import {AppError} from "../../common/errors";
+import { CreateUserDTO, UpdateUserDTO } from "./dto";
+import {AppError} from "../../common/constants/errors";
 
 @Injectable()
 export class UsersService {
@@ -14,16 +14,31 @@ export class UsersService {
     async findUserByEmail(email: string) {
         return this.userRepository.findOne({ where: { email } })
     }
-    async createUser(userDto: CreateUserDTO): Promise<CreateUserDTO> {
-        const existUser = await this.findUserByEmail(userDto.email)
-        if (existUser) throw new BadRequestException(AppError.USER_EXIST)
-        userDto.password = await this.hashPassword(userDto.password)
+    async createUser(dto: CreateUserDTO): Promise<CreateUserDTO> {
+        dto.password = await this.hashPassword(dto.password)
         await this.userRepository.create({
-            firstName: userDto.firstName,
-            username: userDto.username,
-            email: userDto.email,
-            password: userDto.password
+            firstName: dto.firstName,
+            username: dto.username,
+            email: dto.email,
+            password: dto.password
         })
-        return userDto
+        return dto
+    }
+
+    async publicUser(email: string) {
+        return this.userRepository.findOne({
+            where: {email},
+            attributes: {exclude: ['password']}
+        })
+    }
+
+    async updateUser(email: string, dto: UpdateUserDTO): Promise<UpdateUserDTO> {
+        await this.userRepository.update(dto, {where: {email}})
+        return dto
+    }
+
+    async deleteUser(email: string) {
+        await this.userRepository.destroy({where: {email}})
+        return true
     }
 }
