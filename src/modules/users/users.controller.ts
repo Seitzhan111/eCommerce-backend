@@ -14,13 +14,15 @@ export class UsersController {
     @Patch()
     updateUser(@Body() updateDto: UpdateUserDTO, @Req() request): Promise<UpdateUserDTO> {
         const user = request.user
-        return this.userService.updateUser(user.email, updateDto)
+        return this.userService.updateUser(user.email, user.username, updateDto)
     }
 
+    @ApiTags('API')
+    @ApiResponse({status: 200})
     @UseGuards(JwtAuthGuard)
     @Delete()
     deleteUser(@Req() request) {
         const user = request.user
-        return this.userService.deleteUser(user.email)
+        return this.userService.deleteUser(user.email, user.username)
     }
 }

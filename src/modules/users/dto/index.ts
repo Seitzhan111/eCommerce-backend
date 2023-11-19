@@ -5,7 +5,7 @@ export class CreateUserDTO {
     @ApiProperty()
     @IsString()
     @Length(3)
-    firstName: string
+    fullName: string
 
     @ApiProperty()
     @IsString()
@@ -14,6 +14,10 @@ export class CreateUserDTO {
     @ApiProperty()
     @IsEmail()
     email: string
+
+    @ApiProperty()
+    @IsString()
+    phone: string
 
     @ApiProperty()
     @Length(5)
@@ -24,7 +28,7 @@ export class UpdateUserDTO {
     @ApiProperty()
     @IsString()
     @Length(3)
-    firstName: string
+    fullName: string
 
     @ApiProperty()
     @IsString()
@@ -33,4 +37,8 @@ export class UpdateUserDTO {
     @ApiProperty()
     @IsEmail()
     email: string
+
+    @ApiProperty()
+    @IsString()
+    phone: string
 }
