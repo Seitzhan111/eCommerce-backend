@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { CreateUserDTO } from "../users/dto";
 import { AppError } from "../../common/constants/errors";
@@ -19,15 +19,11 @@ export class AuthService {
     try {
       const userByEmail = await this.userService.findUserByEmail(dto.email)
       const userByUsername = await this.userService.findUserByUsername(dto.username)
-      if (userByEmail) {
-        throw new BadRequestException(AppError.USER_EMAIL_EXIST);
-      }else if (userByUsername) {
-        throw new BadRequestException(AppError.USER_LOGIN_EXIST);
-      }else {
-        return this.userService.createUser(dto);
-      }
+      if (userByEmail) throw new BadRequestException(AppError.USER_EMAIL_EXIST)
+      else if (userByUsername) throw new BadRequestException(AppError.USER_LOGIN_EXIST)
+      else return this.userService.createUser(dto)
     }catch (error) {
-      throw new Error(error)
+      throw error;
     }
   }
 
@@ -49,7 +45,7 @@ export class AuthService {
       }
       return {...user, token}
     } catch (error) {
-        throw new Error(error);
-      }
+      throw error;
+    }
   }
 }

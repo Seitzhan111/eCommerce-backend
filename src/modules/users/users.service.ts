@@ -8,11 +8,12 @@ import { Op } from "sequelize";
 @Injectable()
 export class UsersService {
     constructor(@InjectModel(User) private readonly userRepository: typeof User) {}
+
     async hashPassword(password: string): Promise<string> {
         try {
             return bcrypt.hash(password, 7)
         }catch (error) {
-            throw new Error(error)
+            throw error
         }
     }
     async findUserByEmail(email: string): Promise<User> {
@@ -24,7 +25,7 @@ export class UsersService {
             }
             return null;
         }catch (error) {
-            throw new Error(error)
+            throw error
         }
     }
 
@@ -37,8 +38,12 @@ export class UsersService {
             }
             return null;
         }catch (error) {
-            throw new Error(error)
+            throw error
         }
+    }
+
+    async confirmUserEmail(id: number): Promise<void> {
+        await this.userRepository.update({ emailConfirmed: true, emailConfirmationToken: null }, { where: { id } });
     }
 
     async findUserByIdentifier(identifier: string): Promise<User> {
@@ -55,7 +60,7 @@ export class UsersService {
             }
             return null;
         }catch (error) {
-            throw new Error(error)
+            throw error
         }
     }
 
@@ -71,7 +76,7 @@ export class UsersService {
             })
             return dto
         }catch (error) {
-            throw new Error(error)
+            throw error
         }
     }
 
@@ -90,7 +95,7 @@ export class UsersService {
             }
             return null;
         }catch (error) {
-            throw new Error(error)
+            throw error
         }
     }
 
@@ -99,7 +104,7 @@ export class UsersService {
             await this.userRepository.update(dto, {where: {[Op.or]: [{ email }, { username }]}})
             return dto
         }catch (error) {
-            throw new Error(error)
+            throw error
         }
     }
 
@@ -108,7 +113,7 @@ export class UsersService {
             await this.userRepository.destroy({where: {[Op.or]: [{ email }, { username }]}})
             return true
         }catch (error) {
-            throw new Error(error)
+            throw error
         }
     }
 }

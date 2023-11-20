@@ -1,21 +1,35 @@
-import {Column, Model, Table} from "sequelize-typescript";
+import {Column, Model, Table, Unique} from "sequelize-typescript";
 
 @Table
 export class User extends Model {
     @Column
     fullName: string
 
-    @Column
+    @Column({
+        allowNull: false,
+        unique: true,
+    })
     username: string
 
-    @Column
+    @Column({
+        allowNull: false,
+        unique: true,
+    })
     email: string
 
     @Column
     phone: string
 
-    @Column
+    @Column({
+        allowNull: false,
+    })
     password: string
+
+    // @Column
+    // emailConfirmed: boolean
+    //
+    // @Column
+    // emailConfirmationToken: string
 
     // @Column
     // avatar: string
