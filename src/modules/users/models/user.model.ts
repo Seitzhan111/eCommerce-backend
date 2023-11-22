@@ -1,4 +1,4 @@
-import {Column, Model, Table, Unique} from "sequelize-typescript";
+import {Column, DataType, Model, Table} from "sequelize-typescript";
 
 @Table
 export class User extends Model {
@@ -19,6 +19,19 @@ export class User extends Model {
 
     @Column
     phone: string
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+    })
+    confirmationCode: string;
+
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    })
+    isConfirmed: boolean;
 
     @Column({
         allowNull: false,

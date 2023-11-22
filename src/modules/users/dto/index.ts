@@ -1,4 +1,4 @@
-import {IsEmail, IsOptional, IsString, Length} from "class-validator";
+import {IsEmail, IsNotEmpty, IsOptional, IsString, Length, Matches} from "class-validator";
 import {ApiProperty, ApiPropertyOptional} from "@nestjs/swagger";
 
 export class CreateUserDTO {
@@ -8,10 +8,12 @@ export class CreateUserDTO {
     fullName: string
 
     @ApiProperty()
+    @IsNotEmpty()
     @IsString()
     username: string
 
     @ApiProperty()
+    @IsNotEmpty()
     @IsEmail()
     email: string
 
@@ -20,34 +22,34 @@ export class CreateUserDTO {
     phone: string
 
     @ApiProperty()
-    @Length(5)
+    @IsNotEmpty()
+    @Matches(
+        /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})/,
+        {message: 'Слабый пароль!'}
+    )
     password: string
+    confirmationCode: string;
 }
 
 export class UpdateUserDTO {
-    @ApiProperty()
+    @ApiPropertyOptional()
     @IsOptional()
     @IsString()
     @Length(3)
     fullName: string
 
-    @ApiProperty()
+    @ApiPropertyOptional()
     @IsOptional()
     @IsString()
     username: string
 
-    @ApiProperty()
+    @ApiPropertyOptional()
     @IsOptional()
     @IsEmail()
     email: string
 
-    @ApiProperty()
+    @ApiPropertyOptional()
     @IsOptional()
     @IsString()
     phone: string
-
-    @ApiProperty()
-    @IsOptional()
-    @IsString()
-    message: string
 }

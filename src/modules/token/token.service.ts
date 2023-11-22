@@ -16,4 +16,13 @@ export class TokenService {
       expiresIn: this.configService.get('expire_jwt')
     })
   }
+
+  async verifyResetToken(token: string): Promise<{ user: { email: string } }> {
+    try {
+      const decodedToken = this.jwtService.verify(token, this.configService.get('secret_jwt')) as { user: { email: string } };
+      return decodedToken;
+    } catch (error) {
+      throw new Error('Invalid or expired token');
+    }
+  }
 }

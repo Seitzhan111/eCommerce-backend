@@ -1,15 +1,18 @@
-import { Body, Controller, Post, UseGuards } from "@nestjs/common";
+import {Body, Controller, NotFoundException, Post} from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { CreateUserDTO } from "../users/dto";
 import { UserLoginDTO } from "./dto";
 import { AuthUserResponse } from "./response";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
-import { JwtAuthGuard } from "../../guards/jwt.guard";
+import {UsersService} from "../users/users.service";
+import {ResetPasswordDto} from "../../reset-password/dto/reset-password.dto";
 
 @Controller('auth')
 export class AuthController {
   constructor(
-      private readonly authService: AuthService) {}
+      private readonly authService: AuthService,
+      private readonly usersService: UsersService
+  ) {}
 
   @ApiTags('API')
   @ApiResponse({status: 201, type: CreateUserDTO})
@@ -27,9 +30,22 @@ export class AuthController {
     return this.authService.loginUser(dto)
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('test')
-  test() {
-    return true
+  @Post('confirm')
+  async confirm(@Body('confirmationCode') confirmationCode: string) {
+    try {
+      const confirmedUser = await this.usersService.confirmUser(confirmationCode);
+      return { message: 'User confirmed successfully', user: confirmedUser };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return { message: 'User not found with the provided confirmation code' };
+      }
+      throw error;
+    }
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    await this.authService.sendResetPasswordEmail(resetPasswordDto.email);
+    return { message: 'Email sent for password reset' };
   }
 }

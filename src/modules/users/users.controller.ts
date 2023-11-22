@@ -13,7 +13,7 @@ export class UsersController {
     @ApiResponse({status: 200, type: UpdateUserDTO})
     @UseGuards(JwtAuthGuard)
     @Patch()
-    updateUser(@Body() updateDto: UpdateUserDTO, @Req() request): Promise<{ message: string }> {
+    updateUser(@Body() updateDto: UpdateUserDTO, @Req() request): Promise<UpdateUserDTO> {
         const user = request.user
         return this.userService.updateUser(user.email, user.username, updateDto)
     }

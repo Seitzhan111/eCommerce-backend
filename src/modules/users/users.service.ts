@@ -3,11 +3,16 @@ import {InjectModel} from "@nestjs/sequelize";
 import {User} from "./models/user.model";
 import * as bcrypt from 'bcrypt'
 import { CreateUserDTO, UpdateUserDTO } from "./dto";
-import { Op } from "sequelize";
+import {Op} from "sequelize";
+import {MailerService} from "../mail/mail.service";
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectModel(User) private readonly userRepository: typeof User) {}
+    constructor(
+        @InjectModel(User)
+        private readonly userRepository: typeof User,
+        private readonly mailerService: MailerService
+    ) {}
 
     async hashPassword(password: string): Promise<string> {
         try {
@@ -42,10 +47,6 @@ export class UsersService {
         }
     }
 
-    async confirmUserEmail(id: number): Promise<void> {
-        await this.userRepository.update({ emailConfirmed: true, emailConfirmationToken: null }, { where: { id } });
-    }
-
     async findUserByIdentifier(identifier: string): Promise<User> {
         try {
             if (identifier) {
@@ -67,17 +68,31 @@ export class UsersService {
     async createUser(dto: CreateUserDTO): Promise<CreateUserDTO> {
         try {
             dto.password = await this.hashPassword(dto.password)
-            await this.userRepository.create({
+            const user = await this.userRepository.create({
                 fullName: dto.fullName,
                 username: dto.username,
                 phone: dto.phone,
                 email: dto.email,
-                password: dto.password
+                password: dto.password,
+                confirmationCode: Math.random().toString(36).slice(2),
+                isConfirmed: false,
             })
+            dto.confirmationCode = user.confirmationCode;
+            await this.mailerService.sendConfirmationEmail(dto.email, dto.confirmationCode);
             return dto
         }catch (error) {
             throw error
         }
+    }
+
+    async confirmUser(confirmationCode: string): Promise<User> {
+        const user = await this.userRepository.findOne({ where: { confirmationCode } });
+        if (user) {
+            user.isConfirmed = true;
+            user.confirmationCode = null;
+            await user.save();
+        }
+        return user;
     }
 
     async publicUserByIdentifier(identifier: string): Promise<User> {

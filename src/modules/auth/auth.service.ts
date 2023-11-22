@@ -7,13 +7,26 @@ import * as bcrypt from 'bcrypt'
 import { AuthUserResponse } from "./response";
 import { TokenService } from "../token/token.service";
 import { User } from "../users/models/user.model";
+import {ConfigService} from "@nestjs/config";
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class AuthService {
+  private transporter: nodemailer.Transporter
   constructor(
     private readonly userService: UsersService,
-    private readonly tokenService: TokenService
-  ) {}
+    private readonly tokenService: TokenService,
+    private readonly configService: ConfigService
+  ) {
+    this.transporter = nodemailer.createTransport({
+      host: this.configService.get('mail_host'),
+      port: parseInt(this.configService.get('mail_port')),
+      auth: {
+        user: this.configService.get('mailDev_incoming_user'),
+        pass: this.configService.get('mailDev_incoming_pass'),
+      },
+    });
+  }
 
   async registerUsers(dto: CreateUserDTO): Promise<CreateUserDTO> {
     try {
@@ -47,5 +60,18 @@ export class AuthService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async sendResetPasswordEmail(email: string): Promise<void> {
+    const resetToken = await this.tokenService.generateJwtToken({ user: { email } });
+    const resetLink = `http://localhost:4430/reset-password?token=${resetToken}`;
+
+    const mailOptions = {
+      from: this.configService.get('mailDev_incoming_user'),
+      to: email,
+      subject: 'Password Reset',
+      html: `<p>Click <a href="${resetLink}">here</a> to reset your password.</p>`,
+    };
+    await this.transporter.sendMail(mailOptions);
   }
 }
