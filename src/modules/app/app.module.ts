@@ -6,6 +6,10 @@ import {SequelizeModule} from "@nestjs/sequelize";
 import {User} from "../users/models/user.model";
 import { AuthModule } from "../auth/auth.module";
 import { TokenModule } from "../token/token.module";
+import { ResetPasswordController } from "../../reset-password/reset-password.controller";
+import { ResetPasswordService } from "../../reset-password/reset-password.service";
+import { MailerModule } from "../mail/mail.module";
+import { ResetPasswordModule } from "../../reset-password/reset-password.module";
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -30,8 +34,10 @@ import { TokenModule } from "../token/token.module";
     UsersModule,
     AuthModule,
     TokenModule,
+    MailerModule,
+    ResetPasswordModule
   ],
-  controllers: [],
-  providers: [],
+  controllers: [ResetPasswordController],
+  providers: [ResetPasswordService],
 })
 export class AppModule {}

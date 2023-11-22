@@ -26,4 +26,21 @@ export class MailerService {
         };
         await this.transporter.sendMail(mailOptions);
     }
+
+    async sendEmail(email: string, subject: string, content: string): Promise<void> {
+        const mailOptions = {
+            from: this.configService.get('mailDev_incoming_user'),
+            to: email,
+            subject: 'Восстановление электронной почты',
+            text: content,
+        };
+
+        try {
+            await this.transporter.sendMail(mailOptions);
+            console.log(`Email sent to ${email}`);
+        } catch (error) {
+            console.error('Error sending email:', error);
+            throw new Error('Failed to send email');
+        }
+    }
 }

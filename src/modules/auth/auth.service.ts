@@ -63,15 +63,20 @@ export class AuthService {
   }
 
   async sendResetPasswordEmail(email: string): Promise<void> {
-    const resetToken = await this.tokenService.generateJwtToken({ user: { email } });
-    const resetLink = `http://localhost:4430/reset-password?token=${resetToken}`;
+    try {
+      const resetToken = await this.tokenService.generateJwtToken({ user: { email } });
+      const resetLink = `http://localhost:4430/reset-password?token=${resetToken}`;
 
-    const mailOptions = {
-      from: this.configService.get('mailDev_incoming_user'),
-      to: email,
-      subject: 'Password Reset',
-      html: `<p>Click <a href="${resetLink}">here</a> to reset your password.</p>`,
-    };
-    await this.transporter.sendMail(mailOptions);
+      const mailOptions = {
+        from: this.configService.get('mailDev_incoming_user'),
+        to: email,
+        subject: 'Password Reset',
+        html: `<p>Click <a href="${resetLink}">here</a> to reset your password.</p>`,
+      };
+      await this.transporter.sendMail(mailOptions);
+    }catch (error) {
+      console.error('Ошибка при отправке электронного письма сброса пароля:', error);
+      throw new Error('Не удалось отправить электронное письмо сброса пароля');
+    }
   }
 }

@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
 import {User} from "./models/user.model";
 import * as bcrypt from 'bcrypt'
@@ -93,6 +93,36 @@ export class UsersService {
             await user.save();
         }
         return user;
+    }
+
+
+
+    async updatePassword(id: string, newPassword: string, checkCurrentPassword: boolean = false, currentPassword?: string): Promise<void> {
+        const user = await this.userRepository.findOne({where: {id}});
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        if (checkCurrentPassword) {
+            // Если нужно проверить текущий пароль, делаем это
+            const isCurrentPasswordValid = await this.checkCurrentPassword(user, currentPassword);
+
+            if (!isCurrentPasswordValid) {
+                throw new UnauthorizedException('Invalid current password');
+            }
+        }
+
+        const hashedPassword = await this.hashPassword(newPassword);
+
+        await this.userRepository.update(
+          { password: hashedPassword },
+          { where: { id } }
+        );
+    }
+
+    private async checkCurrentPassword(user: User, currentPassword: string): Promise<boolean> {
+        return await bcrypt.compare(currentPassword, user.password);
     }
 
     async publicUserByIdentifier(identifier: string): Promise<User> {

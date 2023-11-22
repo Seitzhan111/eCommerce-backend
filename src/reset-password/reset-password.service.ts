@@ -1,11 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { UsersService } from "../modules/users/users.service";
+import { TokenService } from "../modules/token/token.service";
 
 @Injectable()
 export class ResetPasswordService {
     private readonly resetTokens: Map<string, string> = new Map();
 
-    saveResetToken(userId: string, resetToken: string): void {
+    constructor(private readonly usersService: UsersService, private readonly tokenService: TokenService) {}
+
+    async saveResetToken(userId: string): Promise<string> {
+        const resetToken = await this.tokenService.generateJwtToken({ user: { userId } });
         this.resetTokens.set(resetToken, userId);
+        return resetToken;
     }
 
     getUserIdByResetToken(resetToken: string): string | undefined {
