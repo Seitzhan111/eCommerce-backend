@@ -10,6 +10,7 @@ import { ResetPasswordController } from "../../reset-password/reset-password.con
 import { ResetPasswordService } from "../../reset-password/reset-password.service";
 import { MailerModule } from "../mail/mail.module";
 import { ResetPasswordModule } from "../../reset-password/reset-password.module";
+import {JwtStrategy} from "../../strategy";
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -35,9 +36,9 @@ import { ResetPasswordModule } from "../../reset-password/reset-password.module"
     AuthModule,
     TokenModule,
     MailerModule,
-    ResetPasswordModule
+    ResetPasswordModule,
   ],
   controllers: [ResetPasswordController],
-  providers: [ResetPasswordService],
+  providers: [ResetPasswordService, JwtStrategy],
 })
 export class AppModule {}

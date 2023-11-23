@@ -11,5 +11,6 @@ export default () => ({
     mail_port: process.env.MAIL_PORT,
     mailDev_incoming_user: process.env.MAILDEV_INCOMING_USER,
     mailDev_incoming_pass: process.env.MAILDEV_INCOMING_PASS,
-
+    google_client_id: process.env.GOOGLE_CLIENT_ID,
+    google_secret: process.env.GOOGLE_SECRET
 })

@@ -16,7 +16,7 @@ export class UsersService {
 
     async hashPassword(password: string): Promise<string> {
         try {
-            return bcrypt.hash(password, 7)
+            return await bcrypt.hash(password, 10)
         }catch (error) {
             throw error
         }

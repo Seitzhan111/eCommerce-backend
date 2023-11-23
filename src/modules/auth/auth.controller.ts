@@ -1,4 +1,4 @@
-import {Body, Controller, NotFoundException, Post} from "@nestjs/common";
+import {Body, Controller, Get, NotFoundException, Post, Req, UseGuards} from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { CreateUserDTO } from "../users/dto";
 import { UserLoginDTO } from "./dto";
@@ -6,6 +6,8 @@ import { AuthUserResponse } from "./response";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import {UsersService} from "../users/users.service";
 import {ResetPasswordDto} from "../../reset-password/dto/reset-password.dto";
+import {GoogleGuard} from "../../guards/google.guard";
+import {Request} from "express";
 
 @Controller('auth')
 export class AuthController {
@@ -47,5 +49,18 @@ export class AuthController {
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     await this.authService.sendResetPasswordEmail(resetPasswordDto.email);
     return { message: 'Email sent for password reset' };
+  }
+
+  @Get('google/login')
+  @UseGuards(GoogleGuard)
+  async oauth2Login() {
+    return {msg: 'Google Authentication'}
+  }
+
+
+  @Get('google/callback')
+  @UseGuards(GoogleGuard)
+  async googleCallback() {
+    return {msg: 'OK'}
   }
 }
