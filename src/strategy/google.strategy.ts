@@ -25,20 +25,22 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
         done: VerifyCallback,
     ): Promise<any> {
         try {
-            const existingUser = await this.usersService.findUserByEmail(profile.email);
-            const existingUser2 = await this.usersService.findUserByUsername(profile.displayName);
+            const existingUserByEmail = await this.usersService.findUserByEmail(profile.email);
+            const existingUserByUsername = await this.usersService.findUserByUsername(profile.displayName);
 
-            if (existingUser || existingUser2) {
-                return done(null, existingUser || existingUser2);
+            if (existingUserByEmail || existingUserByUsername) {
+                return done(null, existingUserByEmail || existingUserByUsername);
             } else {
-
                 const newUser: CreateUserDTO = await this.usersService.createUser({
+                    id: profile.id,
                     fullName: profile.displayName,
                     email: profile.emails[0].value,
                     username: profile.displayName,
                     password: profile.emails[0].value,
-                    phone: null,
-                    confirmationCode: null
+                    phone: profile.phone || null,
+                    confirmationCode: profile.confirmationCode ? null : null,
+                    isConfirmed: true,
+                    isSocialRegistration: true
                 });
                 return done(null, newUser);
             }

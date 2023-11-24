@@ -32,9 +32,14 @@ export class AuthService {
     try {
       const userByEmail = await this.userService.findUserByEmail(dto.email)
       const userByUsername = await this.userService.findUserByUsername(dto.username)
-      if (userByEmail) throw new BadRequestException(AppError.USER_EMAIL_EXIST)
-      else if (userByUsername) throw new BadRequestException(AppError.USER_LOGIN_EXIST)
-      else return this.userService.createUser(dto)
+      if (userByEmail) {
+        throw new BadRequestException(AppError.USER_EMAIL_EXIST)
+      }else if (userByUsername) {
+        throw new BadRequestException(AppError.USER_LOGIN_EXIST)
+      }else {
+        return this.userService.createUser(dto)
+      }
+
     }catch (error) {
       throw error;
     }
@@ -56,7 +61,12 @@ export class AuthService {
       if (dto.email || dto.username) {
         user = await this.userService.publicUserByIdentifier(dto.email || dto.username)
       }
-      return {...user, token}
+
+      const {password, ...userWithoutPassword} = user.toJSON()
+      userWithoutPassword.token = token
+
+      return userWithoutPassword
+
     } catch (error) {
       throw error;
     }
@@ -70,8 +80,8 @@ export class AuthService {
       const mailOptions = {
         from: this.configService.get('mailDev_incoming_user'),
         to: email,
-        subject: 'Password Reset',
-        html: `<p>Click <a href="${resetLink}">here</a> to reset your password.</p>`,
+        subject: 'Сброс пароля',
+        html: `<p>Нажмите на ссылку: <a href="${resetLink}">here</a> для сброса вашего пароля.</p>`,
       };
       await this.transporter.sendMail(mailOptions);
     }catch (error) {

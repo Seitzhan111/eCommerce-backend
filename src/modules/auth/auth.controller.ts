@@ -1,4 +1,4 @@
-import {Body, Controller, Get, NotFoundException, Post, Req, UseGuards} from "@nestjs/common";
+import {Body, Controller, Get, NotFoundException, Post, Req, Res, UseGuards} from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { CreateUserDTO } from "../users/dto";
 import { UserLoginDTO } from "./dto";
@@ -7,7 +7,7 @@ import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import {UsersService} from "../users/users.service";
 import {ResetPasswordDto} from "../../reset-password/dto/reset-password.dto";
 import {GoogleGuard} from "../../guards/google.guard";
-import {Request} from "express";
+import {Request, Response} from "express";
 
 @Controller('auth')
 export class AuthController {

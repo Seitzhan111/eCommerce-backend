@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import {BadRequestException, Injectable, NotFoundException, UnauthorizedException} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
 import {User} from "./models/user.model";
 import * as bcrypt from 'bcrypt'
 import { CreateUserDTO, UpdateUserDTO } from "./dto";
-import {Op} from "sequelize";
+import {Op, where} from "sequelize";
 import {MailerService} from "../mail/mail.service";
+import {AppError} from "../../common/constants/errors";
+import {getLogger} from "nodemailer/lib/shared";
 
 @Injectable()
 export class UsersService {
@@ -68,57 +70,71 @@ export class UsersService {
     async createUser(dto: CreateUserDTO): Promise<CreateUserDTO> {
         try {
             dto.password = await this.hashPassword(dto.password)
+
             const user = await this.userRepository.create({
                 fullName: dto.fullName,
                 username: dto.username,
                 phone: dto.phone,
                 email: dto.email,
                 password: dto.password,
-                confirmationCode: Math.random().toString(36).slice(2),
-                isConfirmed: false,
+                confirmationCode: Math.random().toString(36).slice(2) || null,
+                isConfirmed: dto.isConfirmed,
+                isSocialRegistration: dto.isSocialRegistration ? 'true' : 'false'
             })
             dto.confirmationCode = user.confirmationCode;
-            await this.mailerService.sendConfirmationEmail(dto.email, dto.confirmationCode);
-            return dto
+
+            if (!dto.isSocialRegistration) {
+                await this.mailerService.sendConfirmationEmail(dto.email, dto.confirmationCode);
+            }
+
+            const { password, ...userWithoutPassword } = user.toJSON();
+
+            return userWithoutPassword;
+
         }catch (error) {
             throw error
         }
     }
 
     async confirmUser(confirmationCode: string): Promise<User> {
-        const user = await this.userRepository.findOne({ where: { confirmationCode } });
-        if (user) {
-            user.isConfirmed = true;
-            user.confirmationCode = null;
-            await user.save();
+        try {
+            const user = await this.userRepository.findOne({ where: { confirmationCode } });
+            if (user) {
+                user.isConfirmed = true;
+                user.confirmationCode = null;
+                await user.save();
+            }
+            return user;
+        }catch (error) {
+            throw error
         }
-        return user;
     }
 
-
-
     async updatePassword(id: string, newPassword: string, checkCurrentPassword: boolean = false, currentPassword?: string): Promise<void> {
-        const user = await this.userRepository.findOne({where: {id}});
+        try {
+            const user = await this.userRepository.findOne({where: {id}});
 
-        if (!user) {
-            throw new NotFoundException('User not found');
-        }
-
-        if (checkCurrentPassword) {
-            // Если нужно проверить текущий пароль, делаем это
-            const isCurrentPasswordValid = await this.checkCurrentPassword(user, currentPassword);
-
-            if (!isCurrentPasswordValid) {
-                throw new UnauthorizedException('Invalid current password');
+            if (!user) {
+                throw new NotFoundException('Пользователь не существует');
             }
+
+            if (checkCurrentPassword) {
+                const isCurrentPasswordValid = await this.checkCurrentPassword(user, currentPassword);
+
+                if (!isCurrentPasswordValid) {
+                    throw new UnauthorizedException('Текущий пароль не корректен');
+                }
+            }
+
+            const hashedPassword = await this.hashPassword(newPassword);
+
+            await this.userRepository.update(
+                { password: hashedPassword },
+                { where: { id } }
+            );
+        }catch (error) {
+            throw error
         }
-
-        const hashedPassword = await this.hashPassword(newPassword);
-
-        await this.userRepository.update(
-          { password: hashedPassword },
-          { where: { id } }
-        );
     }
 
     private async checkCurrentPassword(user: User, currentPassword: string): Promise<boolean> {
@@ -146,7 +162,15 @@ export class UsersService {
 
     async updateUser(email: string, username: string, dto: UpdateUserDTO): Promise<UpdateUserDTO> {
         try {
-            await this.userRepository.update(dto, {where: {[Op.or]: [{ email }, { username }]}})
+            const userByEmail = await this.findUserByEmail(dto.email)
+            const userByUsername = await this.findUserByUsername(dto.username)
+            if (userByEmail) {
+                throw new BadRequestException(AppError.USER_EMAIL_EXIST)
+            }else if (userByUsername) {
+                throw new BadRequestException(AppError.USER_LOGIN_EXIST)
+            }else {
+                await this.userRepository.update(dto, {where: {[Op.or]: [{ email }, { username }]}})
+            }
             return dto
         }catch (error) {
             throw error

@@ -3,12 +3,12 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class UserLoginDTO {
   @ApiProperty()
-  @IsOptional() // Добавлено для того, чтобы email был необязательным полем
-  @IsEmail() // Валидация только если поле предоставлено
+  @IsOptional()
+  @IsEmail()
   email?: string;
 
   @ApiProperty()
-  @IsOptional() // Добавлено для того, чтобы username был необязательным полем
+  @IsOptional()
   @IsString()
   username?: string;
 

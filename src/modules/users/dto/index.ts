@@ -1,7 +1,12 @@
-import {IsEmail, IsNotEmpty, IsOptional, IsString, Length, Matches} from "class-validator";
+import {IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches} from "class-validator";
 import {ApiProperty, ApiPropertyOptional} from "@nestjs/swagger";
 
 export class CreateUserDTO {
+    @ApiProperty()
+    @IsNumber()
+    @IsOptional()
+    id?: number
+
     @ApiProperty()
     @IsString()
     @Length(3)
@@ -28,7 +33,20 @@ export class CreateUserDTO {
         {message: 'Слабый пароль!'}
     )
     password: string
-    confirmationCode: string;
+    @ApiProperty()
+    @IsString()
+    @IsOptional()
+    confirmationCode?: string;
+
+    @ApiProperty()
+    @IsBoolean()
+    @IsOptional()
+    isConfirmed?: boolean
+
+    @ApiProperty()
+    @IsBoolean()
+    @IsOptional()
+    isSocialRegistration?: boolean;
 }
 
 export class UpdateUserDTO {

@@ -1,4 +1,6 @@
 import {Column, DataType, Model, Table} from "sequelize-typescript";
+import {ApiProperty} from "@nestjs/swagger";
+import {IsBoolean} from "class-validator";
 
 @Table
 export class User extends Model {
@@ -32,6 +34,12 @@ export class User extends Model {
         defaultValue: false,
     })
     isConfirmed: boolean;
+
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+    })
+    isSocialRegistration: boolean;
 
     @Column({
         allowNull: false,
