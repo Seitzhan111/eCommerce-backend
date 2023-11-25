@@ -59,7 +59,8 @@ export class AuthService {
       const token = await this.tokenService.generateJwtToken(userData)
       let user: User | null;
       if (dto.email || dto.username) {
-        user = await this.userService.publicUserByIdentifier(dto.email || dto.username)
+        const identifier = (dto.email || dto.username).toLowerCase();
+        user = await this.userService.publicUserByIdentifier(identifier)
       }
 
       const {password, ...userWithoutPassword} = user.toJSON()

@@ -10,7 +10,8 @@ import { ResetPasswordController } from "../../reset-password/reset-password.con
 import { ResetPasswordService } from "../../reset-password/reset-password.service";
 import { MailerModule } from "../mail/mail.module";
 import { ResetPasswordModule } from "../../reset-password/reset-password.module";
-import {JwtStrategy} from "../../strategy";
+import {JwtStrategy} from "../../strategy/jwt.strategy";
+import {FacebookStrategy} from "../../strategy/facebook .strategy";
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -39,6 +40,6 @@ import {JwtStrategy} from "../../strategy";
     ResetPasswordModule,
   ],
   controllers: [ResetPasswordController],
-  providers: [ResetPasswordService, JwtStrategy],
+  providers: [ResetPasswordService, JwtStrategy, FacebookStrategy],
 })
 export class AppModule {}

@@ -7,7 +7,7 @@ import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import {UsersService} from "../users/users.service";
 import {ResetPasswordDto} from "../../reset-password/dto/reset-password.dto";
 import {GoogleGuard} from "../../guards/google.guard";
-import {Request, Response} from "express";
+import {FacebookGuard} from "../../guards/facebook.guard";
 
 @Controller('auth')
 export class AuthController {
@@ -36,10 +36,10 @@ export class AuthController {
   async confirm(@Body('confirmationCode') confirmationCode: string) {
     try {
       const confirmedUser = await this.usersService.confirmUser(confirmationCode);
-      return { message: 'User confirmed successfully', user: confirmedUser };
+      return { message: 'Пользователь успешно подтвержден!', user: confirmedUser };
     } catch (error) {
       if (error instanceof NotFoundException) {
-        return { message: 'User not found with the provided confirmation code' };
+        return { message: 'Пользователь с таким кодом подтверждения не существует!' };
       }
       throw error;
     }
@@ -53,7 +53,7 @@ export class AuthController {
 
   @Get('google/login')
   @UseGuards(GoogleGuard)
-  async oauth2Login() {
+  async googleLogin() {
     return {msg: 'Google Authentication'}
   }
 
@@ -61,6 +61,19 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(GoogleGuard)
   async googleCallback() {
+    return {msg: 'OK'}
+  }
+
+  @Get('facebook/login')
+  @UseGuards(FacebookGuard)
+  async facebookLogin() {
+    return {msg: 'Facebook Authentication'}
+  }
+
+
+  @Get('facebook/callback')
+  @UseGuards(FacebookGuard)
+  async facebookCallback() {
     return {msg: 'OK'}
   }
 }

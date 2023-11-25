@@ -12,5 +12,7 @@ export default () => ({
     mailDev_incoming_user: process.env.MAILDEV_INCOMING_USER,
     mailDev_incoming_pass: process.env.MAILDEV_INCOMING_PASS,
     google_client_id: process.env.GOOGLE_CLIENT_ID,
-    google_secret: process.env.GOOGLE_SECRET
+    google_secret: process.env.GOOGLE_SECRET,
+    facebook_app_id: process.env.FACEBOOK_APP_ID,
+    facebook_app_secret: process.env.FACEBOOK_APP_SECRET
 })

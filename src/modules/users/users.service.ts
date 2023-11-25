@@ -52,11 +52,12 @@ export class UsersService {
     async findUserByIdentifier(identifier: string): Promise<User> {
         try {
             if (identifier) {
+                const lowerCasedIdentifier = identifier.toLowerCase()
                 return this.userRepository.findOne({
                     where: {
                         [Op.or]: [
-                            { email: identifier },
-                            { username: identifier },
+                            { email: lowerCasedIdentifier },
+                            { username: lowerCasedIdentifier },
                         ],
                     },
                 });
@@ -73,11 +74,11 @@ export class UsersService {
 
             const user = await this.userRepository.create({
                 fullName: dto.fullName,
-                username: dto.username,
+                username: dto.username.toLowerCase(),
                 phone: dto.phone,
-                email: dto.email,
+                email: dto.email.toLowerCase(),
                 password: dto.password,
-                confirmationCode: Math.random().toString(36).slice(2) || null,
+                confirmationCode: dto.isSocialRegistration ? null : Math.random().toString(36).slice(2),
                 isConfirmed: dto.isConfirmed,
                 isSocialRegistration: dto.isSocialRegistration ? 'true' : 'false'
             })
@@ -104,7 +105,9 @@ export class UsersService {
                 user.confirmationCode = null;
                 await user.save();
             }
-            return user;
+            const { password, isSocialRegistration, ...userWithoutPassword } = user.toJSON();
+
+            return userWithoutPassword;
         }catch (error) {
             throw error
         }
