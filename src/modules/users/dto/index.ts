@@ -5,7 +5,7 @@ export class CreateUserDTO {
     @ApiProperty()
     @IsNumber()
     @IsOptional()
-    id?: number
+    id?: string
 
     @ApiProperty()
     @IsString()

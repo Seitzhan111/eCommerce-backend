@@ -1,4 +1,4 @@
-import {Body, Controller, Get, NotFoundException, Post, Req, Res, UseGuards} from "@nestjs/common";
+import {Body, Controller, Get, NotFoundException, Post, UseGuards} from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { CreateUserDTO } from "../users/dto";
 import { UserLoginDTO } from "./dto";
@@ -8,6 +8,7 @@ import {UsersService} from "../users/users.service";
 import {ResetPasswordDto} from "../../reset-password/dto/reset-password.dto";
 import {GoogleGuard} from "../../guards/google.guard";
 import {FacebookGuard} from "../../guards/facebook.guard";
+import {VkGuard} from "../../guards/vk.guard";
 
 @Controller('auth')
 export class AuthController {
@@ -70,10 +71,22 @@ export class AuthController {
     return {msg: 'Facebook Authentication'}
   }
 
-
   @Get('facebook/callback')
   @UseGuards(FacebookGuard)
   async facebookCallback() {
     return {msg: 'OK'}
   }
+
+  @Get('vk/login')
+  @UseGuards(VkGuard)
+  async vkLogin() {
+    return {msg: 'VK Authentication'}
+  }
+
+  @Get('vk/callback')
+  @UseGuards(VkGuard)
+  async vkCallback() {
+    return {msg: 'OK'}
+  }
+
 }

@@ -31,7 +31,7 @@ export class AuthService {
   async registerUsers(dto: CreateUserDTO): Promise<CreateUserDTO> {
     try {
       const userByEmail = await this.userService.findUserByEmail(dto.email)
-      const userByUsername = await this.userService.findUserByUsername(dto.username)
+        const userByUsername = await this.userService.findUserByUsername(dto.username)
       if (userByEmail) {
         throw new BadRequestException(AppError.USER_EMAIL_EXIST)
       }else if (userByUsername) {

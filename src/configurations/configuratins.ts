@@ -14,5 +14,7 @@ export default () => ({
     google_client_id: process.env.GOOGLE_CLIENT_ID,
     google_secret: process.env.GOOGLE_SECRET,
     facebook_app_id: process.env.FACEBOOK_APP_ID,
-    facebook_app_secret: process.env.FACEBOOK_APP_SECRET
+    facebook_app_secret: process.env.FACEBOOK_APP_SECRET,
+    vkontakte_app_id: process.env.VKONTAKTE_APP_ID,
+    vkontakte_app_secret: process.env.VKONTAKTE_APP_SECRET,
 })

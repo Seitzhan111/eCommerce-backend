@@ -9,11 +9,12 @@ import {GoogleStrategy} from '../../strategy/google.strategy'
 import {PassportModule} from "@nestjs/passport";
 import * as passport from 'passport';
 import {FacebookStrategy} from "../../strategy/facebook .strategy";
+import {VkStrategy} from "../../strategy/vk.strategy";
 
 @Module({
   imports: [UsersModule, TokenModule],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, MailerService, GoogleStrategy, FacebookStrategy]
+  providers: [AuthService, JwtStrategy, MailerService, GoogleStrategy, FacebookStrategy, VkStrategy]
 })
 
 export class AuthModule {}

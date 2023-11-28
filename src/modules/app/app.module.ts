@@ -12,6 +12,8 @@ import { MailerModule } from "../mail/mail.module";
 import { ResetPasswordModule } from "../../reset-password/reset-password.module";
 import {JwtStrategy} from "../../strategy/jwt.strategy";
 import {FacebookStrategy} from "../../strategy/facebook .strategy";
+import {VkStrategy} from "../../strategy/vk.strategy";
+import {GoogleStrategy} from "../../strategy/google.strategy";
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -40,6 +42,6 @@ import {FacebookStrategy} from "../../strategy/facebook .strategy";
     ResetPasswordModule,
   ],
   controllers: [ResetPasswordController],
-  providers: [ResetPasswordService, JwtStrategy, FacebookStrategy],
+  providers: [ResetPasswordService, JwtStrategy, FacebookStrategy, VkStrategy, GoogleStrategy],
 })
 export class AppModule {}

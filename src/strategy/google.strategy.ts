@@ -32,7 +32,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
                 return done(null, existingUserByEmail || existingUserByUsername);
             } else {
                 const newUser: CreateUserDTO = await this.usersService.createUser({
-                    id: profile.id,
                     fullName: profile.displayName,
                     email: profile.emails[0].value,
                     username: profile.displayName,
@@ -42,6 +41,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
                     isConfirmed: true,
                     isSocialRegistration: true
                 });
+
                 return done(null, newUser);
             }
         } catch (error) {
