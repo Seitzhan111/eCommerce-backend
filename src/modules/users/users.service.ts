@@ -6,14 +6,15 @@ import { CreateUserDTO, UpdateUserDTO } from "./dto";
 import {Op, where} from "sequelize";
 import {MailerService} from "../mail/mail.service";
 import {AppError} from "../../common/constants/errors";
-import {getLogger} from "nodemailer/lib/shared";
+import { TokenService } from "../token/token.service";
 
 @Injectable()
 export class UsersService {
     constructor(
         @InjectModel(User)
         private readonly userRepository: typeof User,
-        private readonly mailerService: MailerService
+        private readonly mailerService: MailerService,
+        private readonly tokenService: TokenService
     ) {}
 
     async hashPassword(password: string): Promise<string> {
@@ -84,7 +85,15 @@ export class UsersService {
                 await this.mailerService.sendConfirmationEmail(dto.email, dto.confirmationCode);
             }
 
+            const userData = {
+                id: user.id,
+                username: user.username,
+                email: user.email
+            }
+            const token = await this.tokenService.generateJwtToken(userData)
+
             const { password, ...userWithoutPassword } = user.toJSON();
+            userWithoutPassword.token = token
 
             return userWithoutPassword;
 

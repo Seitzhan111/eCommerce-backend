@@ -18,8 +18,7 @@ export class CategoryController {
     @Get(':id')
     @UseGuards(JwtAuthGuard)
     async findById(@Param('id') id: number, @Req() req): Promise<Category | null> {
-        const user = req.user
-        return this.categoryService.findById(id, user);
+        return this.categoryService.findById(id, +req.user.id);
     }
 
     @Post()
@@ -28,15 +27,17 @@ export class CategoryController {
         return this.categoryService.create(dto, +req.user.id);
     }
 
-    @UseGuards(JwtAuthGuard)
+
     @Patch(':id')
-    async update(@Param('id') id: number, @Body() categoryData: Partial<Category>): Promise<number> {
-        return this.categoryService.update(id, categoryData);
+    @UseGuards(JwtAuthGuard)
+    async update(@Param('id') id: number, @Body() dto: CreateCategoryDTO, @Req() req): Promise<Category> {
+        return this.categoryService.update(id, +req.user.id, dto);
     }
 
-    @UseGuards(JwtAuthGuard)
+
     @Delete(':id')
-    async remove(@Param('id') id: number): Promise<number> {
-        return this.categoryService.remove(id);
+    @UseGuards(JwtAuthGuard)
+    async remove(@Param('id') id: number, @Req() req): Promise<{ message: string }> {
+        return this.categoryService.remove(id, +req.user.id);
     }
 }

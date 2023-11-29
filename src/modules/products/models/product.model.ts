@@ -4,21 +4,21 @@ import {Category} from "../../category/models/category.model";
 
 @Table
 export class Product extends Model {
-    @Column
+    @Column(DataType.STRING)
     name: string
 
-    @Column
+    @Column(DataType.STRING)
     description: string
 
-    @Column
-    price: string
+    @Column(DataType.NUMBER)
+    price: number
 
     @Column({
         type: DataType.ARRAY(DataType.STRING),
     })
     images: string[]
 
-    @Column
+    @Column(DataType.BOOLEAN)
     sales: boolean
 
     @ForeignKey(() => User)
@@ -34,4 +34,5 @@ export class Product extends Model {
 
     @BelongsTo(() => Category)
     category: Category;
+
 }

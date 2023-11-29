@@ -1,9 +1,10 @@
 import {Column, DataType, HasMany, Model, Table} from "sequelize-typescript";
 import {Product} from "../../products/models/product.model";
+import { Category } from "../../category/models/category.model";
 
 @Table
 export class User extends Model {
-    @Column
+    @Column(DataType.STRING)
     fullName: string
 
     @Column({
@@ -18,7 +19,7 @@ export class User extends Model {
     })
     email: string
 
-    @Column
+    @Column(DataType.STRING)
     phone: string
 
     @Column({
@@ -45,11 +46,11 @@ export class User extends Model {
     })
     password: string
 
-    // @Column({
-    //     type: DataType.ENUM('user', 'admin'),
-    //     defaultValue: 'user',
-    // })
-    // role: 'user' | 'admin';
+    @Column({
+        type: DataType.ENUM('user', 'admin'),
+        defaultValue: 'user',
+    })
+    role: 'user' | 'admin';
 
     @HasMany(() => Product, {
         onDelete: 'CASCADE',
@@ -57,21 +58,21 @@ export class User extends Model {
     })
     products: Product[]
 
-    // @Column
-    // avatar: string
-    //
-    // @Column
-    // images: string
+    @HasMany(() => Category, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    })
+    categories: Category[]
+
+    @Column(DataType.STRING)
+    avatar?: string
+
+    @Column(DataType.ARRAY(DataType.STRING))
+    images?: string[];
 
     // @Column
     // posts: string
 
     // @Column
     // comments: string
-
-    // @Column
-    // role: string
-
-    // @Column
-    // products: string
 }

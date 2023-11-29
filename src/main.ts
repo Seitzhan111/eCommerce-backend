@@ -9,6 +9,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService)
   const port = configService.get('port')
   app.useGlobalPipes(new ValidationPipe())
+  app.enableCors()
   const config = new DocumentBuilder()
       .setTitle('eCommerce api')
       .setDescription('Api для интернет магазина')
