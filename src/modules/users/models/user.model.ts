@@ -1,6 +1,5 @@
-import {Column, DataType, Model, Table} from "sequelize-typescript";
-import {ApiProperty} from "@nestjs/swagger";
-import {IsBoolean} from "class-validator";
+import {Column, DataType, HasMany, Model, Table} from "sequelize-typescript";
+import {Product} from "../../products/models/product.model";
 
 @Table
 export class User extends Model {
@@ -46,11 +45,17 @@ export class User extends Model {
     })
     password: string
 
-    // @Column
-    // emailConfirmed: boolean
-    //
-    // @Column
-    // emailConfirmationToken: string
+    // @Column({
+    //     type: DataType.ENUM('user', 'admin'),
+    //     defaultValue: 'user',
+    // })
+    // role: 'user' | 'admin';
+
+    @HasMany(() => Product, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    })
+    products: Product[]
 
     // @Column
     // avatar: string

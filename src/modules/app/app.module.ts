@@ -14,6 +14,10 @@ import {JwtStrategy} from "../../strategy/jwt.strategy";
 import {FacebookStrategy} from "../../strategy/facebook .strategy";
 import {VkStrategy} from "../../strategy/vk.strategy";
 import {GoogleStrategy} from "../../strategy/google.strategy";
+import {CategoryModule} from "../category/category.module";
+import {Category} from "../category/models/category.model";
+import {Product} from "../products/models/product.model";
+import {ProductsModule} from "../products/products.module";
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -32,7 +36,7 @@ import {GoogleStrategy} from "../../strategy/google.strategy";
         database: configService.get('db_name'),
         synchronize: true,
         autoLoadModels: true,
-        models: [User],
+        models: [User, Category, Product],
       })
     }),
     UsersModule,
@@ -40,6 +44,8 @@ import {GoogleStrategy} from "../../strategy/google.strategy";
     TokenModule,
     MailerModule,
     ResetPasswordModule,
+    CategoryModule,
+    ProductsModule
   ],
   controllers: [ResetPasswordController],
   providers: [ResetPasswordService, JwtStrategy, FacebookStrategy, VkStrategy, GoogleStrategy],
