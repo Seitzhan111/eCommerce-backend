@@ -10,7 +10,7 @@ export class ProductsService {
       private readonly productRepository: typeof Product,
   ) {}
 
-  async create(dto: ProductDTO, id: number): Promise<Product> {
+  async create(dto: ProductDTO): Promise<Product> {
     try {
       const isExist = await this.productRepository.findOne({
         where: {name: dto.name}
@@ -22,7 +22,6 @@ export class ProductsService {
         price: dto.price,
         images: dto.images || null,
         sales: dto.sales || null,
-        userId: id,
         categoryId: dto.categoryId
       }
       return await this.productRepository.create(newProduct)
@@ -39,9 +38,9 @@ export class ProductsService {
     return await this.productRepository.findAll({where: {id}})
   }
 
-  async update(id: number, userId: number, dto: ProductUpdateDTO): Promise<Product> {
+  async update(id: number, dto: ProductUpdateDTO): Promise<Product> {
     try {
-      await this.productRepository.update(dto, { where: { id, userId } });
+      await this.productRepository.update(dto, { where: { id } });
       const updatedProduct = await this.productRepository.findByPk(id);
       return updatedProduct
     }catch (error) {
@@ -49,16 +48,13 @@ export class ProductsService {
     }
   }
 
-  async remove(id: number, userId: number): Promise<{ message: string }> {
+  async remove(id: number): Promise<{ message: string }> {
     try {
       const existProduct = await this.productRepository.findOne({
-        where: { id, userId },
+        where: { id },
       });
 
-      if (!existProduct) {
-        throw new BadRequestException(`У вас нет продукта с идентификатором ${id}`);
-      }
-      await this.productRepository.destroy({ where: { id, userId } });
+      await this.productRepository.destroy({ where: { id } });
 
       return { message: `Продукт с идентификатором ${id} успешно удален.` };
     }catch (error) {

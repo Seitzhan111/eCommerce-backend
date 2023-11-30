@@ -1,5 +1,4 @@
 import {ArrayNotEmpty, IsArray, IsNotEmpty, IsNumber, IsOptional, IsString} from "class-validator";
-import {User} from "../../users/models/user.model";
 
 export class CategoryDTO {
     @IsNotEmpty()
@@ -12,8 +11,4 @@ export class CategoryDTO {
     @IsNotEmpty({ each: true })
     @IsOptional()
     productIds?: number[] | string[];
-
-    @IsNumber({}, { each: true })
-    @IsOptional()
-    user?: User
 }

@@ -15,27 +15,26 @@ export class CategoryController {
 
     @Get(':id')
     @UseGuards(JwtAuthGuard)
-    async findById(@Param('id') id: number, @Req() req): Promise<Category | null> {
-        return this.categoryService.findById(id, +req.user.id);
+    async findById(@Param('id') id: number): Promise<Category | null> {
+        return this.categoryService.findById(id);
     }
 
     @Post()
     @UseGuards(JwtAuthGuard)
-    async create(@Body() dto: CategoryDTO, @Req() req): Promise<Category> {
-        return this.categoryService.create(dto, +req.user.id);
+    async create(@Body() dto: CategoryDTO): Promise<Category> {
+        return this.categoryService.create(dto);
     }
-
 
     @Patch(':id')
     @UseGuards(JwtAuthGuard)
-    async update(@Param('id') id: number, @Body() dto: CategoryDTO, @Req() req): Promise<Category> {
-        return this.categoryService.update(id, +req.user.id, dto);
+    async update(@Param('id') id: number, @Body() dto: CategoryDTO): Promise<Category> {
+        return this.categoryService.update(id, dto);
     }
 
 
     @Delete(':id')
     @UseGuards(JwtAuthGuard)
-    async remove(@Param('id') id: number, @Req() req): Promise<{ message: string }> {
-        return this.categoryService.remove(id, +req.user.id);
+    async remove(@Param('id') id: number): Promise<{ message: string }> {
+        return this.categoryService.remove(id);
     }
 }

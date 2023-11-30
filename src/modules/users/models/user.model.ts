@@ -51,27 +51,10 @@ export class User extends Model {
     @BelongsToMany(() => Role, () => UserRoles)
     roles: Role[]
 
-    @HasMany(() => Product, {
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    })
-    products: Product[]
-
-    @HasMany(() => Category, {
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    })
-    categories: Category[]
-
     @Column(DataType.STRING)
     avatar?: string
 
     @Column(DataType.ARRAY(DataType.STRING))
     images?: string[];
 
-    // @Column
-    // posts: string
-
-    // @Column
-    // comments: string
 }

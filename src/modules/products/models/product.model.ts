@@ -29,13 +29,6 @@ export class Product extends Model {
     @Column(DataType.BOOLEAN)
     sales: boolean
 
-    @ForeignKey(() => User)
-    @Column
-    userId: number
-
-    @BelongsTo(() => User)
-    user: User
-
     @ForeignKey(() => Category)
     @Column
     categoryId: number;

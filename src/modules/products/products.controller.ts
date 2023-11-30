@@ -10,8 +10,8 @@ export class ProductsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() dto: ProductDTO, @Req() req): Promise<Product> {
-    return this.productsService.create(dto, +req.user.id);
+  create(@Body() dto: ProductDTO): Promise<Product> {
+    return this.productsService.create(dto);
   }
 
   @Get()
@@ -26,13 +26,13 @@ export class ProductsController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: number, @Body() dto: ProductUpdateDTO, @Req() req): Promise<Product> {
-    return this.productsService.update(id, +req.user.id, dto);
+  update(@Param('id') id: number, @Body() dto: ProductUpdateDTO): Promise<Product> {
+    return this.productsService.update(id, dto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: number, @Req() req): Promise<{ message: string }> {
-    return this.productsService.remove(id, +req.user.id);
+  remove(@Param('id') id: number): Promise<{ message: string }> {
+    return this.productsService.remove(id);
   }
 }
