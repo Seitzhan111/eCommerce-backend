@@ -2,11 +2,12 @@ import {BadRequestException, Injectable, NotFoundException, UnauthorizedExceptio
 import {InjectModel} from "@nestjs/sequelize";
 import {User} from "./models/user.model";
 import * as bcrypt from 'bcrypt'
-import { CreateUserDTO, UpdateUserDTO } from "./dto";
+import {CreateUserDTO, UpdateUserDTO} from "./dto";
 import {Op, where} from "sequelize";
 import {MailerService} from "../mail/mail.service";
 import {AppError} from "../../common/constants/errors";
 import { TokenService } from "../token/token.service";
+import {RolesService} from "../roles/roles.service";
 
 @Injectable()
 export class UsersService {
@@ -14,7 +15,8 @@ export class UsersService {
         @InjectModel(User)
         private readonly userRepository: typeof User,
         private readonly mailerService: MailerService,
-        private readonly tokenService: TokenService
+        private readonly tokenService: TokenService,
+        private readonly roleService: RolesService
     ) {}
 
     async hashPassword(password: string): Promise<string> {
@@ -67,6 +69,7 @@ export class UsersService {
 
     async createUser(dto: CreateUserDTO): Promise<CreateUserDTO> {
         try {
+            const role = await this.roleService.getRoleByValue("USER")
             dto.password = await this.hashPassword(dto.password)
 
             const user = await this.userRepository.create({
@@ -77,20 +80,21 @@ export class UsersService {
                 password: dto.password,
                 confirmationCode: dto.isSocialRegistration ? null : Math.random().toString(36).slice(2),
                 isConfirmed: dto.isConfirmed,
-                isSocialRegistration: dto.isSocialRegistration ? 'true' : 'false'
+                isSocialRegistration: dto.isSocialRegistration ? 'true' : 'false',
+                role: role.id
             })
+
             dto.confirmationCode = user.confirmationCode;
 
             if (!dto.isSocialRegistration) {
                 await this.mailerService.sendConfirmationEmail(dto.email, dto.confirmationCode);
             }
 
-            const userData = {
+            const token = await this.tokenService.generateJwtToken({
                 id: user.id,
                 username: user.username,
-                email: user.email
-            }
-            const token = await this.tokenService.generateJwtToken(userData)
+                email: user.email,
+            })
 
             const { password, ...userWithoutPassword } = user.toJSON();
             userWithoutPassword.token = token
@@ -100,6 +104,11 @@ export class UsersService {
         }catch (error) {
             throw error
         }
+    }
+
+    async getAllUsers() {
+        const users = await this.userRepository.findAll({include: {all: true}})
+        return users
     }
 
     async confirmUser(confirmationCode: string): Promise<User> {

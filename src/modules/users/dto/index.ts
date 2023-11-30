@@ -1,4 +1,15 @@
-import {IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches} from "class-validator";
+import {
+    IsArray,
+    IsBoolean,
+    IsEmail,
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+    Length,
+    Matches
+} from "class-validator";
 import {ApiProperty, ApiPropertyOptional} from "@nestjs/swagger";
 
 export class CreateUserDTO {
@@ -33,6 +44,7 @@ export class CreateUserDTO {
         {message: 'Слабый пароль!'}
     )
     password: string
+
     @ApiProperty()
     @IsString()
     @IsOptional()
@@ -47,6 +59,21 @@ export class CreateUserDTO {
     @IsBoolean()
     @IsOptional()
     isSocialRegistration?: boolean;
+
+    @ApiProperty({
+        default: 'user',
+        description: 'User role (user or admin)',
+    })
+    role: 'user' | 'admin';
+
+    @IsString()
+    @IsOptional()
+    avatar?: string
+
+    @IsArray()
+    @IsString({ each: true })
+    @IsOptional()
+    images?: string[];
 }
 
 export class UpdateUserDTO {
@@ -70,4 +97,18 @@ export class UpdateUserDTO {
     @IsOptional()
     @IsString()
     phone: string
+
+    @ApiProperty({
+        default: 'user',
+        description: 'User role (user or admin)',
+    })
+    role: 'user' | 'admin';
+
+    @IsString()
+    @IsOptional()
+    avatar?: string
+
+    @IsArray()
+    @IsString({ each: true })
+    images?: string[];
 }

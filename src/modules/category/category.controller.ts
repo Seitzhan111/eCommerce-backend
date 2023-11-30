@@ -2,17 +2,15 @@ import {Controller, Get, Post, Put, Delete, Param, Body, UseGuards, Patch, Req} 
 import { CategoryService } from './category.service';
 import {Category} from "./models/category.model";
 import {JwtAuthGuard} from "../../guards/jwt.guard";
-import {CreateCategoryDTO} from "./dto";
+import {CategoryDTO} from "./dto";
 
 @Controller('categories')
 export class CategoryController {
     constructor(private readonly categoryService: CategoryService) {}
 
     @Get()
-    @UseGuards(JwtAuthGuard)
-    async getAllCategories(@Req() req): Promise<Category[]> {
-        const user = req.user
-        return this.categoryService.findAll(user);
+    async getAllCategories(): Promise<Category[]> {
+        return this.categoryService.findAll();
     }
 
     @Get(':id')
@@ -23,14 +21,14 @@ export class CategoryController {
 
     @Post()
     @UseGuards(JwtAuthGuard)
-    async create(@Body() dto: CreateCategoryDTO, @Req() req): Promise<Category> {
+    async create(@Body() dto: CategoryDTO, @Req() req): Promise<Category> {
         return this.categoryService.create(dto, +req.user.id);
     }
 
 
     @Patch(':id')
     @UseGuards(JwtAuthGuard)
-    async update(@Param('id') id: number, @Body() dto: CreateCategoryDTO, @Req() req): Promise<Category> {
+    async update(@Param('id') id: number, @Body() dto: CategoryDTO, @Req() req): Promise<Category> {
         return this.categoryService.update(id, +req.user.id, dto);
     }
 

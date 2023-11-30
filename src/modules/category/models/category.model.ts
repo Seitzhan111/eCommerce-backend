@@ -1,19 +1,22 @@
-import {BelongsTo, Column, ForeignKey, HasMany, Model, Table} from "sequelize-typescript";
-import {Product} from "../../products/models/product.model";
-import {User} from "../../users/models/user.model";
+import {Model, Column, ForeignKey, BelongsTo, DataType, HasMany, Table} from 'sequelize-typescript';
+import { User } from '../../users/models/user.model';
+import { Product } from '../../products/models/product.model';
 
 @Table
 export class Category extends Model {
     @Column
-    name: string
-
-    @HasMany(() => Product)
-    products: Product[];
+    name: string;
 
     @ForeignKey(() => User)
-    @Column({ references: { model: User, key: 'id' } })
+    @Column
     userId: number;
 
     @BelongsTo(() => User)
     user: User;
+
+    @HasMany(() => Product, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    })
+    products: Product[];
 }

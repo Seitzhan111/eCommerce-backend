@@ -1,6 +1,8 @@
-import {Column, DataType, HasMany, Model, Table} from "sequelize-typescript";
+import {BelongsToMany, Column, DataType, HasMany, Model, Table} from "sequelize-typescript";
 import {Product} from "../../products/models/product.model";
 import { Category } from "../../category/models/category.model";
+import {Role} from "../../roles/models/roles.model";
+import {UserRoles} from "../../roles/models/user-roles.model";
 
 @Table
 export class User extends Model {
@@ -46,11 +48,8 @@ export class User extends Model {
     })
     password: string
 
-    @Column({
-        type: DataType.ENUM('user', 'admin'),
-        defaultValue: 'user',
-    })
-    role: 'user' | 'admin';
+    @BelongsToMany(() => Role, () => UserRoles)
+    roles: Role[]
 
     @HasMany(() => Product, {
         onDelete: 'CASCADE',

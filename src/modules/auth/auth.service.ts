@@ -52,12 +52,11 @@ export class AuthService {
       if (!existUser) throw new BadRequestException(AppError.USER_NOT_FOUND)
       const validatePassword = await bcrypt.compare(dto.password, existUser.password)
       if (!validatePassword) throw new BadRequestException(AppError.WRONG_DATA)
-      const userData = {
+      const token = await this.tokenService.generateJwtToken({
         id: existUser.id,
         username: existUser.username,
-        email: existUser.email
-      }
-      const token = await this.tokenService.generateJwtToken(userData)
+        email: existUser.email,
+      })
       let user: User | null;
       if (dto.email || dto.username) {
         const identifier = (dto.email || dto.username).toLowerCase();

@@ -18,6 +18,9 @@ import {CategoryModule} from "../category/category.module";
 import {Category} from "../category/models/category.model";
 import {Product} from "../products/models/product.model";
 import {ProductsModule} from "../products/products.module";
+import {Role} from "../roles/models/roles.model";
+import {RolesModule} from "../roles/roles.module";
+import {UserRoles} from "../roles/models/user-roles.model";
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -36,7 +39,7 @@ import {ProductsModule} from "../products/products.module";
         database: configService.get('db_name'),
         synchronize: true,
         autoLoadModels: true,
-        models: [User, Category, Product],
+        models: [User, Category, Product, Role, UserRoles],
       })
     }),
     UsersModule,
@@ -45,7 +48,8 @@ import {ProductsModule} from "../products/products.module";
     MailerModule,
     ResetPasswordModule,
     CategoryModule,
-    ProductsModule
+    ProductsModule,
+    RolesModule
   ],
   controllers: [ResetPasswordController],
   providers: [ResetPasswordService, JwtStrategy, FacebookStrategy, VkStrategy, GoogleStrategy],

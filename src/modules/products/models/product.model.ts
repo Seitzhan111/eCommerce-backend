@@ -1,4 +1,12 @@
-import {BelongsTo, Column, DataType, ForeignKey, Model, Table} from "sequelize-typescript";
+import {
+    AfterCreate,
+    BelongsTo,
+    Column,
+    DataType,
+    ForeignKey,
+    Model,
+    Table
+} from "sequelize-typescript";
 import {User} from "../../users/models/user.model";
 import {Category} from "../../category/models/category.model";
 
@@ -10,7 +18,7 @@ export class Product extends Model {
     @Column(DataType.STRING)
     description: string
 
-    @Column(DataType.NUMBER)
+    @Column(DataType.INTEGER)
     price: number
 
     @Column({
@@ -34,5 +42,4 @@ export class Product extends Model {
 
     @BelongsTo(() => Category)
     category: Category;
-
 }

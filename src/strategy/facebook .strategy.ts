@@ -42,7 +42,8 @@ export class FacebookStrategy extends PassportStrategy(Strategy) {
                     phone: null,
                     confirmationCode: null,
                     isConfirmed: true,
-                    isSocialRegistration: true
+                    isSocialRegistration: true,
+                    role: null
                 });
 
                 done(null, newUser);

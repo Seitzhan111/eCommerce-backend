@@ -39,7 +39,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
                     phone: profile.phone || null,
                     confirmationCode: null,
                     isConfirmed: true,
-                    isSocialRegistration: true
+                    isSocialRegistration: true,
+                    role: null
                 });
 
                 return done(null, newUser);

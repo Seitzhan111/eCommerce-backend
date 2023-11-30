@@ -3,25 +3,21 @@ import { InjectModel } from '@nestjs/sequelize';
 import {Category} from "./models/category.model";
 import {Product} from "../products/models/product.model";
 import {User} from "../users/models/user.model";
-import {CreateCategoryDTO} from "./dto";
+import {CategoryDTO} from "./dto";
 import {Repository} from "sequelize-typescript";
 @Injectable()
 export class CategoryService {
     constructor(
       @InjectModel(Category)
-      private readonly categoryRepository: Repository<Category>,
+      private readonly categoryRepository:typeof Category,
     ) {
     }
 
-    async findAll(user: User): Promise<Category[]> {
-        const userId = user.id
-        return this.categoryRepository.findAll({
-            where: { userId },
-            // include: [{ model: Product, as: 'products' }, { model: User, as: 'user' }],
-        });
+    async findAll(): Promise<Category[]> {
+        return this.categoryRepository.findAll();
     }
 
-    async findById(id: number, userId: number): Promise<Category | null> {
+    async findById(id: number, userId: number): Promise<Category> {
         const existCategory = await this.categoryRepository.findOne({
             where: { id, userId },
             // include: [{ model: Product, as: 'products' }, { model: User, as: 'user' }],
@@ -34,7 +30,7 @@ export class CategoryService {
         return existCategory;
     }
 
-    async create(dto: CreateCategoryDTO, id: number): Promise<Category> {
+    async create(dto: CategoryDTO, id: number): Promise<Category> {
         const isExist = await this.categoryRepository.findOne({
             where: { name: dto.name }
         })
@@ -42,13 +38,14 @@ export class CategoryService {
         if (isExist) throw new BadRequestException('Такая категория уже существует!')
         const newCategory = {
             name: dto.name,
-            userId: id
+            userId: id,
+            productIds: dto.productIds
         }
         return await this.categoryRepository.create(newCategory)
     }
 
 
-    async update(id: number, userId: number, dto: CreateCategoryDTO): Promise<Category> {
+    async update(id: number, userId: number, dto: CategoryDTO): Promise<Category> {
         try {
             const existingCategory = await this.categoryRepository.findOne({
                 where: { name: dto.name },
@@ -67,16 +64,20 @@ export class CategoryService {
     }
 
     async remove(id: number, userId: number): Promise<{ message: string }> {
-        const existCategory = await this.categoryRepository.findOne({
-            where: { id, userId },
-        });
+        try {
+            const existCategory = await this.categoryRepository.findOne({
+                where: { id, userId },
+            });
 
-        if (!existCategory) {
-            throw new BadRequestException(`У вас нет категории с идентификатором ${id}`);
+            if (!existCategory) {
+                throw new BadRequestException(`У вас нет категории с идентификатором ${id}`);
+            }
+
+            await this.categoryRepository.destroy({ where: { id, userId } });
+
+            return { message: `Категория с идентификатором ${id} успешно удалена.` };
+        }catch (error) {
+            throw error
         }
-
-        await this.categoryRepository.destroy({ where: { id, userId } });
-
-        return { message: `Категория с идентификатором ${id} успешно удалена.` };
     }
 }

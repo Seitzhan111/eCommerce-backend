@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Patch, Post, Req, UseGuards } from "@nestjs/common";
+import {Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards} from "@nestjs/common";
 import {UsersService} from "./users.service";
 import { UpdateUserDTO } from "./dto";
 import { JwtAuthGuard } from "../../guards/jwt.guard";
@@ -16,6 +16,11 @@ export class UsersController {
     updateUser(@Body() updateDto: UpdateUserDTO, @Req() request): Promise<UpdateUserDTO> {
         const user = request.user
         return this.usersService.updateUser(user.email, user.username, updateDto)
+    }
+
+    @Get()
+    getAllUsers() {
+        return this.usersService.getAllUsers()
     }
 
     @ApiTags('API')
