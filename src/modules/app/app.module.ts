@@ -21,9 +21,12 @@ import {ProductsModule} from "../products/products.module";
 import {Role} from "../roles/models/roles.model";
 import {RolesModule} from "../roles/roles.module";
 import {UserRoles} from "../roles/models/user-roles.model";
+import { CloudinaryModule } from "../cloudinary/cloudinary.module";
+import { MulterModule } from "@nestjs/platform-express";
 
 @Module({
-  imports: [ConfigModule.forRoot({
+  imports: [
+    ConfigModule.forRoot({
     isGlobal: true,
     load: [configurations]
   }),
@@ -49,7 +52,8 @@ import {UserRoles} from "../roles/models/user-roles.model";
     ResetPasswordModule,
     CategoryModule,
     ProductsModule,
-    RolesModule
+    RolesModule,
+    CloudinaryModule,
   ],
   controllers: [ResetPasswordController],
   providers: [ResetPasswordService, JwtStrategy, FacebookStrategy, VkStrategy, GoogleStrategy],

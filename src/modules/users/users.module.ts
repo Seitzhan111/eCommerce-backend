@@ -8,9 +8,10 @@ import { TokenModule } from "../token/token.module";
 import {Role} from "../roles/models/roles.model";
 import {UserRoles} from "../roles/models/user-roles.model";
 import {RolesModule} from "../roles/roles.module";
+import { CloudinaryModule } from "../cloudinary/cloudinary.module";
 
 @Module({
-  imports: [SequelizeModule.forFeature([User, Role, UserRoles]), TokenModule, RolesModule],
+  imports: [SequelizeModule.forFeature([User, Role, UserRoles]), TokenModule, RolesModule, CloudinaryModule],
   controllers: [UsersController],
   providers: [UsersService, MailerService],
   exports: [UsersService]

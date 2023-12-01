@@ -17,4 +17,7 @@ export default () => ({
     facebook_app_secret: process.env.FACEBOOK_APP_SECRET,
     vkontakte_app_id: process.env.VKONTAKTE_APP_ID,
     vkontakte_app_secret: process.env.VKONTAKTE_APP_SECRET,
+    cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
+    cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET
 })

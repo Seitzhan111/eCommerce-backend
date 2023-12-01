@@ -2,12 +2,15 @@ import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
 import {Product} from "./models/product.model";
 import {ProductDTO, ProductUpdateDTO} from "./dto";
+import { MulterFile } from 'multer';
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
 
 @Injectable()
 export class ProductsService {
   constructor(
       @InjectModel(Product)
       private readonly productRepository: typeof Product,
+      private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async create(dto: ProductDTO): Promise<Product> {
@@ -59,6 +62,26 @@ export class ProductsService {
       return { message: `Продукт с идентификатором ${id} успешно удален.` };
     }catch (error) {
       throw error
+    }
+  }
+
+
+  async uploadImage(id: string, image: MulterFile): Promise<any> {
+    try {
+      const product = await this.productRepository.findByPk(id);
+
+      if (!product) {
+        throw new Error('Продукт не найден!');
+      }
+
+      const imagePath = await this.cloudinaryService.upload(image);
+
+      product.images = [...(product.images || []), imagePath];
+      await product.save();
+
+      return { message: 'Картинка успешно загрузилась!', imagePath: imagePath };
+    } catch (error) {
+      throw new Error('Ошибка при загрузке картинки!');
     }
   }
 }

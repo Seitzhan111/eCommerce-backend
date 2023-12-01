@@ -8,6 +8,8 @@ import {MailerService} from "../mail/mail.service";
 import {AppError} from "../../common/constants/errors";
 import { TokenService } from "../token/token.service";
 import {RolesService} from "../roles/roles.service";
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { MulterFile } from 'multer';
 
 @Injectable()
 export class UsersService {
@@ -16,7 +18,8 @@ export class UsersService {
         private readonly userRepository: typeof User,
         private readonly mailerService: MailerService,
         private readonly tokenService: TokenService,
-        private readonly roleService: RolesService
+        private readonly roleService: RolesService,
+        private readonly cloudinaryService: CloudinaryService
     ) {}
 
     async hashPassword(password: string): Promise<string> {
@@ -69,7 +72,7 @@ export class UsersService {
 
     async createUser(dto: CreateUserDTO): Promise<CreateUserDTO> {
         try {
-            const role = await this.roleService.getRoleByValue("USER")
+            // const role = await this.roleService.getRoleByValue("USER")
             dto.password = await this.hashPassword(dto.password)
 
             const user = await this.userRepository.create({
@@ -81,7 +84,7 @@ export class UsersService {
                 confirmationCode: dto.isSocialRegistration ? null : Math.random().toString(36).slice(2),
                 isConfirmed: dto.isConfirmed,
                 isSocialRegistration: dto.isSocialRegistration ? 'true' : 'false',
-                role: role.id
+                // role: role.id
             })
 
             dto.confirmationCode = user.confirmationCode;
@@ -200,6 +203,17 @@ export class UsersService {
             return true
         }catch (error) {
             throw error
+        }
+    }
+
+    async uploadAvatar(file: MulterFile, id: number): Promise<any> {
+        try {
+            const avatarPath = await this.cloudinaryService.upload(file);
+            await this.userRepository.update({ avatar: avatarPath }, { where: { id } });
+            return { message: 'Аватар успешно загрузился!' };
+        } catch (error) {
+            console.error(error);
+            throw new Error('Ошибка при загрузке файла аватара!');
         }
     }
 }

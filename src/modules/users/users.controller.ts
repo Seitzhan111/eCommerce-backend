@@ -1,8 +1,23 @@
-import {Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards} from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Req,
+    UploadedFile,
+    UseGuards,
+    UseInterceptors
+} from "@nestjs/common";
 import {UsersService} from "./users.service";
 import { UpdateUserDTO } from "./dto";
 import { JwtAuthGuard } from "../../guards/jwt.guard";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { MulterFile } from 'multer';
+import { FileInterceptor } from "@nestjs/platform-express";
+
 
 @Controller('users')
 export class UsersController {
@@ -36,5 +51,18 @@ export class UsersController {
     async updatePassword(@Param('userId') userId: string, @Body() data: { currentPassword: string, newPassword: string }): Promise<{ message: string }> {
         await this.usersService.updatePassword(userId, data.newPassword, true, data.currentPassword);
         return { message: 'Пароль успешно изменен!' };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('upload-avatar')
+    @UseInterceptors(FileInterceptor('avatar'))
+    async uploadAvatar(@UploadedFile() avatar: MulterFile, @Req() request): Promise<any> {
+        try {
+            const result = await this.usersService.uploadAvatar(avatar, request.user.id);
+            return { message: result.message, avatarPath: result.avatarPath };
+        } catch (error) {
+            console.error(error);
+            return { error: 'Ошибка при загрузки аватара!' };
+        }
     }
 }
