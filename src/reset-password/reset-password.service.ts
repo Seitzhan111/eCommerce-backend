@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from "../modules/users/users.service";
 import { TokenService } from "../modules/token/token.service";
 

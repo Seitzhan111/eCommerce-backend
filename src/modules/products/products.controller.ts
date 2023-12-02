@@ -65,4 +65,13 @@ export class ProductsController {
       return { error: 'Ошибка при загрузке картинки!' };
     }
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/images/:index')
+  async deleteImage(
+    @Param('id') productId: number,
+    @Param('index') imageIndex: number,
+  ): Promise<{ message: string }> {
+    return this.productsService.deleteImage(productId, imageIndex);
+  }
 }

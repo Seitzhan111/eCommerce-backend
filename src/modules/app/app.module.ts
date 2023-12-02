@@ -22,7 +22,6 @@ import {Role} from "../roles/models/roles.model";
 import {RolesModule} from "../roles/roles.module";
 import {UserRoles} from "../roles/models/user-roles.model";
 import { CloudinaryModule } from "../cloudinary/cloudinary.module";
-import { MulterModule } from "@nestjs/platform-express";
 
 @Module({
   imports: [

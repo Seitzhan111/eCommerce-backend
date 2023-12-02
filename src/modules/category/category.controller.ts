@@ -14,26 +14,24 @@ export class CategoryController {
     }
 
     @Get(':id')
-    @UseGuards(JwtAuthGuard)
     async findById(@Param('id') id: number): Promise<Category | null> {
         return this.categoryService.findById(id);
     }
 
-    @Post()
     @UseGuards(JwtAuthGuard)
+    @Post()
     async create(@Body() dto: CategoryDTO): Promise<Category> {
         return this.categoryService.create(dto);
     }
 
-    @Patch(':id')
     @UseGuards(JwtAuthGuard)
+    @Patch(':id')
     async update(@Param('id') id: number, @Body() dto: CategoryDTO): Promise<Category> {
         return this.categoryService.update(id, dto);
     }
 
-
-    @Delete(':id')
     @UseGuards(JwtAuthGuard)
+    @Delete(':id')
     async remove(@Param('id') id: number): Promise<{ message: string }> {
         return this.categoryService.remove(id);
     }

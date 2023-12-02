@@ -9,6 +9,7 @@ import { TokenService } from "../token/token.service";
 import { User } from "../users/models/user.model";
 import {ConfigService} from "@nestjs/config";
 import * as nodemailer from 'nodemailer';
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class AuthService {
@@ -16,7 +17,8 @@ export class AuthService {
   constructor(
     private readonly userService: UsersService,
     private readonly tokenService: TokenService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly jwtService: JwtService
   ) {
     this.transporter = nodemailer.createTransport({
       host: this.configService.get('mail_host'),
@@ -56,6 +58,7 @@ export class AuthService {
         id: existUser.id,
         username: existUser.username,
         email: existUser.email,
+        roles: [existUser.roles[0].value]
       })
       let user: User | null;
       if (dto.email || dto.username) {

@@ -1,6 +1,4 @@
-import {BelongsToMany, Column, DataType, HasMany, Model, Table} from "sequelize-typescript";
-import {Product} from "../../products/models/product.model";
-import { Category } from "../../category/models/category.model";
+import {BelongsToMany, Column, DataType, Model, Table} from "sequelize-typescript";
 import {Role} from "../../roles/models/roles.model";
 import {UserRoles} from "../../roles/models/user-roles.model";
 

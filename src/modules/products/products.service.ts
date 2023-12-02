@@ -68,7 +68,7 @@ export class ProductsService {
 
   async uploadImage(id: string, image: MulterFile): Promise<any> {
     try {
-      const product = await this.productRepository.findByPk(id);
+      const product = await this.productRepository.findOne({where: {id}});
 
       if (!product) {
         throw new Error('Продукт не найден!');
@@ -82,6 +82,29 @@ export class ProductsService {
       return { message: 'Картинка успешно загрузилась!', imagePath: imagePath };
     } catch (error) {
       throw new Error('Ошибка при загрузке картинки!');
+    }
+  }
+
+  async deleteImage(productId: number, imageIndex: number): Promise<{ message: string }> {
+    try {
+      const product = await this.productRepository.findByPk(productId);
+      if (!product) {
+        throw new Error('Продукт не найден!');
+      }
+      const images = product.images || [];
+      if (images.length > 0 && imageIndex >= 0 && imageIndex < images.length) {
+        await this.cloudinaryService.delete(images[imageIndex]);
+        images.splice(imageIndex, 1);
+        product.images = images;
+        await this.productRepository.update({ images }, { where: { id: productId } });
+        return { message: 'Изображение успешно удалено!' };
+      } else {
+        console.warn('Invalid index or empty array. No action taken.');
+        return { message: 'Неверный индекс или пустой массив. Не выполнено никаких действий.' };
+      }
+    }  catch (error) {
+      console.error('Error while saving product:', error);
+      throw new Error('Ошибка при сохранении продукта!');
     }
   }
 }

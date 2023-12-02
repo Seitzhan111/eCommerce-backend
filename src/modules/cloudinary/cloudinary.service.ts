@@ -29,4 +29,18 @@ export class CloudinaryService {
       throw new Error('Ошибка при загрузке файла в Cloudinary!');
     }
   }
+
+  async delete(publicId: string): Promise<void> {
+    try {
+      const result = await cloudinary.uploader.destroy(publicId);
+      if (result.result === 'not found') {
+      } else if (result.error) {
+        throw new Error(`Ошибка при удалении изображения из Cloudinary: ${result.error.message || 'Unknown error'}`);
+      } else {
+      }
+    } catch (error) {
+      console.error('Error during deletion from Cloudinary:', error);
+      throw new Error(`Ошибка при удалении изображения из Cloudinary: ${error.message}`);
+    }
+  }
 }

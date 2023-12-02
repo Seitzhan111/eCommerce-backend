@@ -17,6 +17,8 @@ import { JwtAuthGuard } from "../../guards/jwt.guard";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { MulterFile } from 'multer';
 import { FileInterceptor } from "@nestjs/platform-express";
+import { Roles } from "../auth/decorator/roles-auth.decorator";
+import { RolesGuard } from "../../guards/roles.guard";
 
 
 @Controller('users')
@@ -33,8 +35,11 @@ export class UsersController {
         return this.usersService.updateUser(user.email, user.username, updateDto)
     }
 
+    @Roles("ADMIN")
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Get()
-    getAllUsers() {
+    getAllUsers(@Req() req) {
+        console.log(req.user);
         return this.usersService.getAllUsers()
     }
 
@@ -64,5 +69,12 @@ export class UsersController {
             console.error(error);
             return { error: 'Ошибка при загрузки аватара!' };
         }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Delete('avatar')
+    async deleteAvatar(@Req() request): Promise<{ message: string }> {
+        const userId = request.user.id;
+        return this.usersService.deleteAvatar(userId);
     }
 }

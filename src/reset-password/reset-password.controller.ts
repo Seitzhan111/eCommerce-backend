@@ -16,13 +16,11 @@ export class ResetPasswordController {
         const { email } = body;
         try {
             const resetToken = await this.resetPasswordService.saveResetToken(userId);
-
-            // Отправка электронного письма с ссылкой для сброса пароля
             const resetLink = `http://localhost:4430/reset-password/${resetToken}`;
-            const emailContent = `Click on the following link to reset your password: ${resetLink}`;
+            const emailContent = `Нажмите на ссылку для сброса пароля: ${resetLink}`;
             console.log(email);
 
-            await this.mailerService.sendEmail(email, 'Password Reset', emailContent);
+            await this.mailerService.sendEmail(email, 'Сброс пароля', emailContent);
             return { resetToken };
         }catch (error) {
             throw error

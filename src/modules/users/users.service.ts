@@ -3,7 +3,7 @@ import {InjectModel} from "@nestjs/sequelize";
 import {User} from "./models/user.model";
 import * as bcrypt from 'bcrypt'
 import {CreateUserDTO, UpdateUserDTO} from "./dto";
-import {Op, where} from "sequelize";
+import {Op} from "sequelize";
 import {MailerService} from "../mail/mail.service";
 import {AppError} from "../../common/constants/errors";
 import { TokenService } from "../token/token.service";
@@ -62,6 +62,7 @@ export class UsersService {
                             { username: lowerCasedIdentifier },
                         ],
                     },
+                    include: {all: true}
                 });
             }
             return null;
@@ -72,7 +73,7 @@ export class UsersService {
 
     async createUser(dto: CreateUserDTO): Promise<CreateUserDTO> {
         try {
-            // const role = await this.roleService.getRoleByValue("USER")
+
             dto.password = await this.hashPassword(dto.password)
 
             const user = await this.userRepository.create({
@@ -84,8 +85,10 @@ export class UsersService {
                 confirmationCode: dto.isSocialRegistration ? null : Math.random().toString(36).slice(2),
                 isConfirmed: dto.isConfirmed,
                 isSocialRegistration: dto.isSocialRegistration ? 'true' : 'false',
-                // role: role.id
             })
+            const role = await this.roleService.getRoleByValue("ADMIN")
+            await user.$set('roles', [role.id])
+            user.roles = [role]
 
             dto.confirmationCode = user.confirmationCode;
 
@@ -93,10 +96,12 @@ export class UsersService {
                 await this.mailerService.sendConfirmationEmail(dto.email, dto.confirmationCode);
             }
 
+
             const token = await this.tokenService.generateJwtToken({
                 id: user.id,
                 username: user.username,
                 email: user.email,
+                roles: [user.roles[0].value]
             })
 
             const { password, ...userWithoutPassword } = user.toJSON();
@@ -214,6 +219,26 @@ export class UsersService {
         } catch (error) {
             console.error(error);
             throw new Error('Ошибка при загрузке файла аватара!');
+        }
+    }
+
+    async deleteAvatar(userId: number): Promise<{ message: string }> {
+        try {
+            const user = await this.userRepository.findByPk(userId);
+            if (!user) {
+                throw new Error('Пользователь не найден!');
+            }
+            if (!user.avatar) {
+                throw new Error('У пользователя нет аватара для удаления!');
+            }
+            await this.cloudinaryService.delete(user.avatar);
+            user.avatar = null;
+            await user.save();
+
+            return { message: 'Аватар успешно удален!' };
+        } catch (error) {
+            console.error(error);
+            throw new Error('Ошибка при удалении файла аватара!');
         }
     }
 }
