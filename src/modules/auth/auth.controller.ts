@@ -9,6 +9,7 @@ import {ResetPasswordDto} from "../../reset-password/dto/reset-password.dto";
 import {GoogleGuard} from "../../guards/google.guard";
 import {FacebookGuard} from "../../guards/facebook.guard";
 import {VkGuard} from "../../guards/vk.guard";
+import { JwtAuthGuard } from "../../guards/jwt.guard";
 
 @Controller('auth')
 export class AuthController {
@@ -44,47 +45,46 @@ export class AuthController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('reset-password')
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     await this.authService.sendResetPasswordEmail(resetPasswordDto.email);
     return { message: 'Email sent for password reset' };
   }
 
-  @Get('google/login')
   @UseGuards(GoogleGuard)
+  @Get('google/login')
   async googleLogin() {
     return {msg: 'Google Authentication'}
   }
 
-
-  @Get('google/callback')
   @UseGuards(GoogleGuard)
+  @Get('google/callback')
   async googleCallback() {
     return {msg: 'OK'}
   }
 
-  @Get('facebook/login')
   @UseGuards(FacebookGuard)
+  @Get('facebook/login')
   async facebookLogin() {
     return {msg: 'Facebook Authentication'}
   }
 
-  @Get('facebook/callback')
   @UseGuards(FacebookGuard)
+  @Get('facebook/callback')
   async facebookCallback() {
     return {msg: 'OK'}
   }
 
-  @Get('vk/login')
   @UseGuards(VkGuard)
+  @Get('vk/login')
   async vkLogin() {
     return {msg: 'VK Authentication'}
   }
 
-  @Get('vk/callback')
   @UseGuards(VkGuard)
+  @Get('vk/callback')
   async vkCallback() {
     return {msg: 'OK'}
   }
-
 }

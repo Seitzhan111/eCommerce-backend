@@ -79,7 +79,7 @@ export class ProductsService {
       product.images = [...(product.images || []), imagePath];
       await product.save();
 
-      return { message: 'Картинка успешно загрузилась!', imagePath: imagePath };
+      return { message: 'Картинка успешно загрузилась!', imagePath };
     } catch (error) {
       throw new Error('Ошибка при загрузке картинки!');
     }

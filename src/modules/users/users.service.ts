@@ -1,8 +1,14 @@
-import {BadRequestException, Injectable, NotFoundException, UnauthorizedException} from "@nestjs/common";
+import {
+    BadRequestException,
+    HttpException, HttpStatus,
+    Injectable,
+    NotFoundException,
+    UnauthorizedException
+} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
 import {User} from "./models/user.model";
 import * as bcrypt from 'bcrypt'
-import {CreateUserDTO, UpdateUserDTO} from "./dto";
+import { AddRoleDTO, CreateUserDTO, UpdateUserDTO } from "./dto";
 import {Op} from "sequelize";
 import {MailerService} from "../mail/mail.service";
 import {AppError} from "../../common/constants/errors";
@@ -86,7 +92,7 @@ export class UsersService {
                 isConfirmed: dto.isConfirmed,
                 isSocialRegistration: dto.isSocialRegistration ? 'true' : 'false',
             })
-            const role = await this.roleService.getRoleByValue("ADMIN")
+            const role = await this.roleService.getRoleByValue("USER")
             await user.$set('roles', [role.id])
             user.roles = [role]
 
@@ -101,7 +107,7 @@ export class UsersService {
                 id: user.id,
                 username: user.username,
                 email: user.email,
-                roles: [user.roles[0].value]
+                roles: user.roles
             })
 
             const { password, ...userWithoutPassword } = user.toJSON();
@@ -215,7 +221,7 @@ export class UsersService {
         try {
             const avatarPath = await this.cloudinaryService.upload(file);
             await this.userRepository.update({ avatar: avatarPath }, { where: { id } });
-            return { message: 'Аватар успешно загрузился!' };
+            return { message: 'Аватар успешно загрузился!', avatarPath };
         } catch (error) {
             console.error(error);
             throw new Error('Ошибка при загрузке файла аватара!');
@@ -240,5 +246,15 @@ export class UsersService {
             console.error(error);
             throw new Error('Ошибка при удалении файла аватара!');
         }
+    }
+
+    async addRole(dto: AddRoleDTO) {
+        const user = await this.userRepository.findByPk(dto.userId)
+        const role = await this.roleService.getRoleByValue(dto.value)
+        if (role && user) {
+            await user.$add('role', role.id)
+            return dto
+        }
+        throw new HttpException('Пользователь или роль не найдена', HttpStatus.NOT_FOUND)
     }
 }

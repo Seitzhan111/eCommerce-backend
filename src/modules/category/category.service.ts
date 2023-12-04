@@ -7,7 +7,7 @@ import {CategoryDTO} from "./dto";
 export class CategoryService {
     constructor(
       @InjectModel(Category)
-      private readonly categoryRepository:typeof Category,
+      private readonly categoryRepository: typeof Category,
     ) {
     }
 

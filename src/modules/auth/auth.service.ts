@@ -58,7 +58,7 @@ export class AuthService {
         id: existUser.id,
         username: existUser.username,
         email: existUser.email,
-        roles: [existUser.roles[0].value]
+        roles: existUser.roles
       })
       let user: User | null;
       if (dto.email || dto.username) {

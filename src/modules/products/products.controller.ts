@@ -6,23 +6,28 @@ import {
   Patch,
   Param,
   Delete,
-  Req,
   UseGuards,
   UseInterceptors,
-  UploadedFile, UploadedFiles
+  UploadedFile,
 } from "@nestjs/common";
 import { ProductsService } from './products.service';
 import {JwtAuthGuard} from "../../guards/jwt.guard";
 import {ProductDTO, ProductUpdateDTO} from "./dto";
 import {Product} from "./models/product.model";
 import { MulterFile } from 'multer';
-import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { Roles } from "../auth/decorator/roles-auth.decorator";
+import { RolesGuard } from "../../guards/roles.guard";
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @ApiTags('API')
+  @ApiResponse({status: 201})
+  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
   create(@Body() dto: ProductDTO): Promise<Product> {
     return this.productsService.create(dto);
@@ -38,19 +43,28 @@ export class ProductsController {
     return this.productsService.findOne(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiTags('API')
+  @ApiResponse({status: 200})
+  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch(':id')
   update(@Param('id') id: number, @Body() dto: ProductUpdateDTO): Promise<Product> {
     return this.productsService.update(id, dto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiTags('API')
+  @ApiResponse({status: 200})
+  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
   remove(@Param('id') id: number): Promise<{ message: string }> {
     return this.productsService.remove(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiTags('API')
+  @ApiResponse({status: 200})
+  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post(':id/upload-image')
   @UseInterceptors(FileInterceptor('image'))
   async uploadImage(
@@ -66,7 +80,10 @@ export class ProductsController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiTags('API')
+  @ApiResponse({status: 200})
+  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id/images/:index')
   async deleteImage(
     @Param('id') productId: number,

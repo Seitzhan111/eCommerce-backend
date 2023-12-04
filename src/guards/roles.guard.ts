@@ -19,13 +19,13 @@ export class RolesGuard implements CanActivate {
               private readonly reflector: Reflector,
               private readonly configService: ConfigService) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     try {
       const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
         context.getHandler(),
         context.getClass()
       ])
-      console.log('Required Roles:', requiredRoles);
+      // console.log('Required Roles:', requiredRoles);
 
       if (!requiredRoles) {
         return true;
@@ -39,17 +39,12 @@ export class RolesGuard implements CanActivate {
         throw new UnauthorizedException({ message: 'Пользователь не авторизован' });
       }
 
-      console.log(token);
-      const user = await this.jwtService.verify(token);
-      console.log(user);
+      const tokenInfo = this.jwtService.verify(token, {secret: this.configService.get('secret_jwt')});
+      req.user = tokenInfo
+      return tokenInfo.user.roles.some(role => requiredRoles.includes(role.value))
 
-      req.user = user
-
-
-      return user.roles.some(role => requiredRoles.includes(role.value))
     } catch (error) {
-      console.error('Error during token verification:', error);
-      throw new UnauthorizedException({ message: 'Ошибка при верификации токена' });
+      throw new HttpException('Нет доступа', HttpStatus.FORBIDDEN);
     }
   }
 }

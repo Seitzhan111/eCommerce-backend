@@ -111,3 +111,12 @@ export class UpdateUserDTO {
     @IsString({ each: true })
     images?: string[];
 }
+
+
+export class AddRoleDTO {
+    @IsString()
+    value: string
+
+    @IsNumber()
+    userId: number
+}

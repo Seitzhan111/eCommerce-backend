@@ -1,5 +1,4 @@
 import {
-    AfterCreate,
     BelongsTo,
     Column,
     DataType,
@@ -7,8 +6,8 @@ import {
     Model,
     Table
 } from "sequelize-typescript";
-import {User} from "../../users/models/user.model";
 import {Category} from "../../category/models/category.model";
+import { Cart } from "../../cart/models/cart.model";
 
 @Table
 export class Product extends Model {
@@ -30,9 +29,16 @@ export class Product extends Model {
     sales: boolean
 
     @ForeignKey(() => Category)
-    @Column
+    @Column(DataType.INTEGER)
     categoryId: number;
 
     @BelongsTo(() => Category)
     category: Category;
+
+    @ForeignKey(() => Cart)
+    @Column(DataType.INTEGER)
+    cartId: number;
+
+    @BelongsTo(() => Cart)
+    cart: Cart;
 }

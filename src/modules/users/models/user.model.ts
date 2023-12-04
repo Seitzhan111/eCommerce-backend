@@ -1,6 +1,7 @@
-import {BelongsToMany, Column, DataType, Model, Table} from "sequelize-typescript";
+import { BelongsToMany, Column, DataType, HasOne, Model, Table } from "sequelize-typescript";
 import {Role} from "../../roles/models/roles.model";
 import {UserRoles} from "../../roles/models/user-roles.model";
+import { Cart } from "../../cart/models/cart.model";
 
 @Table
 export class User extends Model {
@@ -54,5 +55,8 @@ export class User extends Model {
 
     @Column(DataType.ARRAY(DataType.STRING))
     images?: string[];
+
+    @HasOne(() => Cart)
+    cart: Cart;
 
 }
