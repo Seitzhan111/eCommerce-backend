@@ -12,7 +12,7 @@ import {
     UseInterceptors
 } from "@nestjs/common";
 import {UsersService} from "./users.service";
-import { AddRoleDTO, UpdateUserDTO } from "./dto";
+import { AddRoleDTO, RemoveRoleDTO, UpdateUserDTO } from "./dto";
 import { JwtAuthGuard } from "../../guards/jwt.guard";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { MulterFile } from 'multer';
@@ -46,8 +46,7 @@ export class UsersController {
 
     @ApiTags('API')
     @ApiResponse({status: 200})
-    @Roles('ADMIN')
-    @UseGuards(JwtAuthGuard, RolesGuard)
+    @UseGuards(JwtAuthGuard)
     @Delete()
     deleteUser(@Req() request) {
         const user = request.user
@@ -102,5 +101,14 @@ export class UsersController {
     @Post('/role')
     addRole(@Body() dto: AddRoleDTO) {
         return this.usersService.addRole(dto)
+    }
+
+    @ApiTags('API')
+    @ApiResponse({status: 200})
+    @Roles('ADMIN')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Delete('/role-remove')
+    RemoveRole(@Body() dto: RemoveRoleDTO) {
+        return this.usersService.RemoveRole(dto)
     }
 }

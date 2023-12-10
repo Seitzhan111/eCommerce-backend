@@ -38,10 +38,8 @@ export class CreateUserDTO {
 
     @ApiProperty()
     @IsNotEmpty()
-    @Matches(
-        /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})/,
-        {message: 'Слабый пароль!'}
-    )
+    @Matches(/^(?=.*[A-Z])(?=.*\d)/, { message: 'Пароль должен содержать хотя бы одну заглавную букву и одну цифру' })
+    @Matches(/^.{6,}$/, { message: 'Пароль должен содержать не менее 6 символов' })
     password: string
 
     @ApiProperty()
@@ -98,10 +96,10 @@ export class UpdateUserDTO {
     phone: string
 
     @ApiProperty({
-        default: 'user',
-        description: 'User role (user or admin)',
+        default: 'USER'
     })
-    role: 'user' | 'admin';
+    @IsOptional()
+    role?: 'USER' | 'ADMIN';
 
     @IsString()
     @IsOptional()
@@ -116,6 +114,14 @@ export class UpdateUserDTO {
 export class AddRoleDTO {
     @IsString()
     value: string
+
+    @IsNumber()
+    userId: number
+}
+
+export class RemoveRoleDTO {
+    @IsNumber()
+    roleId: number
 
     @IsNumber()
     userId: number

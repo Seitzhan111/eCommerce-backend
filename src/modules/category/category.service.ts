@@ -41,7 +41,7 @@ export class CategoryService {
 
             return updatedCategory;
         } catch (error) {
-            throw error;
+            throw new BadRequestException(error);
         }
     }
 
@@ -50,7 +50,7 @@ export class CategoryService {
             await this.categoryRepository.destroy({ where: { id } });
             return { message: `Категория с идентификатором ${id} успешно удалена.` };
         }catch (error) {
-            throw error
+            throw new BadRequestException(error);
         }
     }
 }

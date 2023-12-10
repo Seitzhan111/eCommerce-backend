@@ -8,7 +8,7 @@ import {
 import {InjectModel} from "@nestjs/sequelize";
 import {User} from "./models/user.model";
 import * as bcrypt from 'bcrypt'
-import { AddRoleDTO, CreateUserDTO, UpdateUserDTO } from "./dto";
+import { AddRoleDTO, CreateUserDTO, RemoveRoleDTO, UpdateUserDTO } from "./dto";
 import {Op} from "sequelize";
 import {MailerService} from "../mail/mail.service";
 import {AppError} from "../../common/constants/errors";
@@ -16,6 +16,7 @@ import { TokenService } from "../token/token.service";
 import {RolesService} from "../roles/roles.service";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { MulterFile } from 'multer';
+import { Role } from "../roles/models/roles.model";
 
 @Injectable()
 export class UsersService {
@@ -91,17 +92,18 @@ export class UsersService {
                 confirmationCode: dto.isSocialRegistration ? null : Math.random().toString(36).slice(2),
                 isConfirmed: dto.isConfirmed,
                 isSocialRegistration: dto.isSocialRegistration ? 'true' : 'false',
+                role: dto.role
             })
+
             const role = await this.roleService.getRoleByValue("USER")
-            await user.$set('roles', [role.id])
-            user.roles = [role]
+            await user.$set('roles', [role.id]);
+            user.roles = [role];
 
             dto.confirmationCode = user.confirmationCode;
 
             if (!dto.isSocialRegistration) {
                 await this.mailerService.sendConfirmationEmail(dto.email, dto.confirmationCode);
             }
-
 
             const token = await this.tokenService.generateJwtToken({
                 id: user.id,
@@ -253,6 +255,15 @@ export class UsersService {
         const role = await this.roleService.getRoleByValue(dto.value)
         if (role && user) {
             await user.$add('role', role.id)
+            return dto
+        }
+        throw new HttpException('Пользователь или роль не найдена', HttpStatus.NOT_FOUND)
+    }
+    async RemoveRole(dto: RemoveRoleDTO) {
+        const user = await this.userRepository.findByPk(dto.userId)
+        const role = await this.roleService.getRoleById(dto.roleId)
+        if (role && user) {
+            await user.$remove('role', role.id)
             return dto
         }
         throw new HttpException('Пользователь или роль не найдена', HttpStatus.NOT_FOUND)

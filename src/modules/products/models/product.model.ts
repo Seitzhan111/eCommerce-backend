@@ -7,7 +7,11 @@ import {
     Table
 } from "sequelize-typescript";
 import {Category} from "../../category/models/category.model";
-import { Cart } from "../../cart/models/cart.model";
+
+enum ProductStatus {
+    InStock = 'есть в наличии',
+    OutOfStock = 'нет в наличии',
+}
 
 @Table
 export class Product extends Model {
@@ -35,10 +39,11 @@ export class Product extends Model {
     @BelongsTo(() => Category)
     category: Category;
 
-    @ForeignKey(() => Cart)
-    @Column(DataType.INTEGER)
-    cartId: number;
+    @Column({
+        type: DataType.ENUM(...Object.values(ProductStatus)),
+    })
+    status: ProductStatus;
 
-    @BelongsTo(() => Cart)
-    cart: Cart;
+    @Column(DataType.INTEGER)
+    quantity: number;
 }

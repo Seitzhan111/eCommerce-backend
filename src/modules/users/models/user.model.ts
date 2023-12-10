@@ -1,7 +1,8 @@
-import { BelongsToMany, Column, DataType, HasOne, Model, Table } from "sequelize-typescript";
+import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
 import {Role} from "../../roles/models/roles.model";
 import {UserRoles} from "../../roles/models/user-roles.model";
-import { Cart } from "../../cart/models/cart.model";
+import { OrderDetail } from "../../order-detail/models/order-detail.model";
+import { IsOptional } from "class-validator";
 
 @Table
 export class User extends Model {
@@ -48,7 +49,8 @@ export class User extends Model {
     password: string
 
     @BelongsToMany(() => Role, () => UserRoles)
-    roles: Role[]
+    @IsOptional()
+    roles?: Role[]
 
     @Column(DataType.STRING)
     avatar?: string
@@ -56,7 +58,6 @@ export class User extends Model {
     @Column(DataType.ARRAY(DataType.STRING))
     images?: string[];
 
-    @HasOne(() => Cart)
-    cart: Cart;
-
+    @HasMany(() => OrderDetail)
+    orderDetails: OrderDetail[];
 }

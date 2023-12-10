@@ -29,7 +29,7 @@ export class ProductsService {
       }
       return await this.productRepository.create(newProduct)
     }catch (error) {
-      throw error;
+      throw new BadRequestException(error);
     }
   }
 
@@ -47,7 +47,7 @@ export class ProductsService {
       const updatedProduct = await this.productRepository.findByPk(id);
       return updatedProduct
     }catch (error) {
-      throw error
+      throw new BadRequestException(error);
     }
   }
 
@@ -61,7 +61,7 @@ export class ProductsService {
 
       return { message: `Продукт с идентификатором ${id} успешно удален.` };
     }catch (error) {
-      throw error
+      throw new BadRequestException(error);
     }
   }
 

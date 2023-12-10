@@ -22,6 +22,14 @@ import {Role} from "../roles/models/roles.model";
 import {RolesModule} from "../roles/roles.module";
 import {UserRoles} from "../roles/models/user-roles.model";
 import { CloudinaryModule } from "../cloudinary/cloudinary.module";
+import { Order } from "../order/models/order.model";
+import { OrderDetail } from "../order-detail/models/order-detail.model";
+import { OrderModule } from "../order/order.module";
+import { Payment } from "../payment/models/payment.model";
+import { PaymentModule } from "../payment/payment.module";
+import { Delivery } from "../delivery/models/delivery.model";
+import { DeliveryModule } from "../delivery/delivery.module";
+import { OrderDetailModule } from "../order-detail/order-detail.module";
 
 @Module({
   imports: [
@@ -41,7 +49,7 @@ import { CloudinaryModule } from "../cloudinary/cloudinary.module";
         database: configService.get('db_name'),
         synchronize: true,
         autoLoadModels: true,
-        models: [User, Category, Product, Role, UserRoles],
+        models: [User, Category, Product, Role, UserRoles, Order, OrderDetail, Payment, Delivery],
       })
     }),
     UsersModule,
@@ -53,6 +61,10 @@ import { CloudinaryModule } from "../cloudinary/cloudinary.module";
     ProductsModule,
     RolesModule,
     CloudinaryModule,
+    OrderModule,
+    PaymentModule,
+    DeliveryModule,
+    OrderDetailModule
   ],
   controllers: [ResetPasswordController],
   providers: [ResetPasswordService, JwtStrategy, FacebookStrategy, VkStrategy, GoogleStrategy],
