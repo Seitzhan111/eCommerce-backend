@@ -30,6 +30,8 @@ import { PaymentModule } from "../payment/payment.module";
 import { Delivery } from "../delivery/models/delivery.model";
 import { DeliveryModule } from "../delivery/delivery.module";
 import { OrderDetailModule } from "../order-detail/order-detail.module";
+import { Blog } from "../blogs/models/blog.model";
+import { BlogsModule } from "../blogs/blogs.module";
 
 @Module({
   imports: [
@@ -49,7 +51,7 @@ import { OrderDetailModule } from "../order-detail/order-detail.module";
         database: configService.get('db_name'),
         synchronize: true,
         autoLoadModels: true,
-        models: [User, Category, Product, Role, UserRoles, Order, OrderDetail, Payment, Delivery],
+        models: [User, Category, Product, Role, UserRoles, Order, OrderDetail, Payment, Delivery, Blog],
       })
     }),
     UsersModule,
@@ -64,7 +66,8 @@ import { OrderDetailModule } from "../order-detail/order-detail.module";
     OrderModule,
     PaymentModule,
     DeliveryModule,
-    OrderDetailModule
+    OrderDetailModule,
+    BlogsModule
   ],
   controllers: [ResetPasswordController],
   providers: [ResetPasswordService, JwtStrategy, FacebookStrategy, VkStrategy, GoogleStrategy],

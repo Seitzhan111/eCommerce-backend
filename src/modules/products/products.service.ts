@@ -56,6 +56,7 @@ export class ProductsService {
       const existProduct = await this.productRepository.findOne({
         where: { id },
       });
+      if (!existProduct) return {message: `Продукт с идентификатором ${id} не существует`}
 
       await this.productRepository.destroy({ where: { id } });
 
