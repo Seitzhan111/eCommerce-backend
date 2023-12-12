@@ -11,7 +11,7 @@ export class ProductDTO {
 
     @IsNotEmpty()
     @IsNumber()
-    price: string
+    price: number
 
     @IsOptional()
     images?: string[]

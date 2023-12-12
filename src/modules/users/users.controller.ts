@@ -87,11 +87,10 @@ export class UsersController {
 
     @ApiTags('API')
     @ApiResponse({status: 200})
-    @Roles('ADMIN')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Get()
+    @UseGuards(JwtAuthGuard)
+    @Get('user-info')
     userInfo(@Req() req) {
-        return this.usersService.findUserByIdentifier(req.user.email)
+        return this.usersService.publicUserByIdentifier(req.user.email)
     }
 
     @ApiTags('API')

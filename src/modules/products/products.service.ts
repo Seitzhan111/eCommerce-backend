@@ -19,11 +19,21 @@ export class ProductsService {
         where: {name: dto.name}
       })
       if (isExist) throw new BadRequestException('Продукт с таким названием уже существует!')
+
+      const images = [];
+
+      if (dto.images && dto.images.length > 0) {
+        for (const image of dto.images) {
+          const imageUrl = await this.cloudinaryService.upload(image);
+          images.push(imageUrl);
+        }
+      }
+
       const newProduct = {
         name: dto.name,
         description: dto.description,
         price: dto.price,
-        images: dto.images || null,
+        images: images.length > 0 ? images : null,
         sales: dto.sales || null,
         categoryId: dto.categoryId
       }
