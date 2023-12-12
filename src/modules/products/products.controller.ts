@@ -25,7 +25,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @ApiTags('API')
-  @ApiResponse({status: 201})
+  @ApiResponse({status: 201, type: ProductDTO})
   @Roles('ADMIN')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
@@ -44,7 +44,7 @@ export class ProductsController {
   }
 
   @ApiTags('API')
-  @ApiResponse({status: 200})
+  @ApiResponse({status: 200, type: ProductUpdateDTO})
   @Roles('ADMIN')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch(':id')

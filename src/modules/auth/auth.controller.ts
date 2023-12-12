@@ -1,4 +1,4 @@
-import {Body, Controller, Get, NotFoundException, Post, UseGuards} from "@nestjs/common";
+import { Body, Controller, Get, NotFoundException, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { CreateUserDTO } from "../users/dto";
 import { UserLoginDTO } from "./dto";
@@ -60,8 +60,8 @@ export class AuthController {
 
   @UseGuards(GoogleGuard)
   @Get('google/callback')
-  async googleCallback() {
-    return {msg: 'OK'}
+  async googleCallback(@Req() req, @Res() res: Response) {
+    (res as any).redirect('http://localhost:3000');
   }
 
   @UseGuards(FacebookGuard)

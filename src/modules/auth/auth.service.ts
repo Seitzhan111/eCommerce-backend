@@ -67,6 +67,7 @@ export class AuthService {
       }
 
       const {password, ...userWithoutPassword} = user.toJSON()
+      userWithoutPassword.roles = user.roles
       userWithoutPassword.token = token
 
       return userWithoutPassword
