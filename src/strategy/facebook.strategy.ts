@@ -4,12 +4,15 @@ import { Strategy, Profile } from 'passport-facebook';
 import {ConfigService} from "@nestjs/config";
 import {UsersService} from "../modules/users/users.service";
 import {CreateUserDTO} from "../modules/users/dto";
+import { AuthUserResponse } from "../modules/auth/response";
+import { AuthService } from "../modules/auth/auth.service";
 
 
 @Injectable()
 export class FacebookStrategy extends PassportStrategy(Strategy) {
     constructor(private readonly configService: ConfigService,
-                private readonly usersService: UsersService
+                private readonly usersService: UsersService,
+                private readonly authService: AuthService
     ) {
         super({
             clientID: configService.get('facebook_app_id'),
@@ -27,12 +30,17 @@ export class FacebookStrategy extends PassportStrategy(Strategy) {
         done: (err: any, user: any, info?: any) => void
     ): Promise<any> {
         try {
-
             const existingUserByEmail = await this.usersService.findUserByEmail(profile.emails[0].value);
             const existingUserByUsername = await this.usersService.findUserByUsername(profile.name.familyName);
 
             if (existingUserByEmail || existingUserByUsername) {
-                return done(null, existingUserByEmail || existingUserByUsername);
+                const userLogin: AuthUserResponse = await this.authService.loginUser({
+                    email: profile.emails[0].value,
+                    username: profile.displayName,
+                    password: profile.emails[0].value,
+                });
+
+                return done(null, userLogin);
             } else {
                 const newUser: CreateUserDTO = await this.usersService.createUser({
                     fullName: profile.name.familyName + ' ' + profile.name.givenName,

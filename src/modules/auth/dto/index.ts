@@ -16,3 +16,15 @@ export class UserLoginDTO {
   @Length(5)
   password: string;
 }
+
+export class UserLoginSocialDTO {
+  @ApiProperty()
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  username?: string;
+}

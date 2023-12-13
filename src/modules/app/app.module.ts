@@ -11,7 +11,7 @@ import { ResetPasswordService } from "../../reset-password/reset-password.servic
 import { MailerModule } from "../mail/mail.module";
 import { ResetPasswordModule } from "../../reset-password/reset-password.module";
 import {JwtStrategy} from "../../strategy/jwt.strategy";
-import {FacebookStrategy} from "../../strategy/facebook .strategy";
+import {FacebookStrategy} from "../../strategy/facebook.strategy";
 import {VkStrategy} from "../../strategy/vk.strategy";
 import {GoogleStrategy} from "../../strategy/google.strategy";
 import {CategoryModule} from "../category/category.module";
@@ -32,6 +32,8 @@ import { DeliveryModule } from "../delivery/delivery.module";
 import { OrderDetailModule } from "../order-detail/order-detail.module";
 import { Blog } from "../blogs/models/blog.model";
 import { BlogsModule } from "../blogs/blogs.module";
+import { AuthService } from "../auth/auth.service";
+import { JwtModule } from "@nestjs/jwt";
 
 @Module({
   imports: [
@@ -67,9 +69,10 @@ import { BlogsModule } from "../blogs/blogs.module";
     PaymentModule,
     DeliveryModule,
     OrderDetailModule,
-    BlogsModule
+    BlogsModule,
+    JwtModule
   ],
   controllers: [ResetPasswordController],
-  providers: [ResetPasswordService, JwtStrategy, FacebookStrategy, VkStrategy, GoogleStrategy],
+  providers: [ResetPasswordService, JwtStrategy, FacebookStrategy, VkStrategy, GoogleStrategy, AuthService],
 })
 export class AppModule {}

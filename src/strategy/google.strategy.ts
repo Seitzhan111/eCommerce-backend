@@ -4,12 +4,18 @@ import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import {ConfigService} from "@nestjs/config";
 import {UsersService} from "../modules/users/users.service";
 import {CreateUserDTO} from "../modules/users/dto";
+import { TokenService } from "../modules/token/token.service";
+import { AuthService } from "../modules/auth/auth.service";
+import { UserLoginDTO, UserLoginSocialDTO } from "../modules/auth/dto";
+import { AuthUserResponse } from "../modules/auth/response";
 
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy) {
     constructor(private readonly configService: ConfigService,
-                private readonly usersService: UsersService
+                private readonly usersService: UsersService,
+                private readonly authService: AuthService
+
     ) {
         super({
             clientID: configService.get('google_client_id'),
@@ -25,13 +31,19 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
         done: VerifyCallback,
     ): Promise<any> {
         try {
-            const existingUserByEmail = await this.usersService.findUserByEmail(profile.email);
+            const existingUserByEmail = await this.usersService.findUserByEmail(profile.emails[0].value);
             const existingUserByUsername = await this.usersService.findUserByUsername(profile.displayName);
 
             if (existingUserByEmail || existingUserByUsername) {
-                return done(null, existingUserByEmail || existingUserByUsername);
+                const userLogin: AuthUserResponse = await this.authService.loginUser({
+                    email: profile.emails[0].value,
+                    username: profile.displayName,
+                    password: profile.emails[0].value,
+                });
+
+                return done(null, userLogin);
             } else {
-                const newUser: CreateUserDTO = await this.usersService.createUser({
+                const newUser: CreateUserDTO = await this.authService.registerUsers({
                     fullName: profile.displayName,
                     email: profile.emails[0].value,
                     username: profile.displayName,

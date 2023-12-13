@@ -10,6 +10,7 @@ import {GoogleGuard} from "../../guards/google.guard";
 import {FacebookGuard} from "../../guards/facebook.guard";
 import {VkGuard} from "../../guards/vk.guard";
 import { JwtAuthGuard } from "../../guards/jwt.guard";
+import { AuthGuard } from "@nestjs/passport";
 
 @Controller('auth')
 export class AuthController {
@@ -72,8 +73,8 @@ export class AuthController {
 
   @UseGuards(FacebookGuard)
   @Get('facebook/callback')
-  async facebookCallback() {
-    return {msg: 'OK'}
+  async facebookCallback(@Req() req, @Res() res: Response) {
+    (res as any).redirect('http://localhost:3000');
   }
 
   @UseGuards(VkGuard)

@@ -6,7 +6,7 @@ import { TokenModule } from "../token/token.module";
 import { JwtStrategy } from "../../strategy/jwt.strategy";
 import {MailerService} from "../mail/mail.service";
 import {GoogleStrategy} from '../../strategy/google.strategy'
-import {FacebookStrategy} from "../../strategy/facebook .strategy";
+import {FacebookStrategy} from "../../strategy/facebook.strategy";
 import {VkStrategy} from "../../strategy/vk.strategy";
 import { JwtModule } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";

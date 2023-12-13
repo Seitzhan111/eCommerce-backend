@@ -73,6 +73,7 @@ export class AuthService {
       return userWithoutPassword
 
     } catch (error) {
+      console.error('Login Error:', error);
       throw error;
     }
   }
