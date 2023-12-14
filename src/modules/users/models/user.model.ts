@@ -55,9 +55,6 @@ export class User extends Model {
     @Column(DataType.STRING)
     avatar?: string
 
-    @Column(DataType.ARRAY(DataType.STRING))
-    images?: string[];
-
     @HasMany(() => OrderDetail)
     orderDetails: OrderDetail[];
 }

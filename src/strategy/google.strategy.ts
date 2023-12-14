@@ -4,9 +4,7 @@ import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import {ConfigService} from "@nestjs/config";
 import {UsersService} from "../modules/users/users.service";
 import {CreateUserDTO} from "../modules/users/dto";
-import { TokenService } from "../modules/token/token.service";
 import { AuthService } from "../modules/auth/auth.service";
-import { UserLoginDTO, UserLoginSocialDTO } from "../modules/auth/dto";
 import { AuthUserResponse } from "../modules/auth/response";
 
 

@@ -8,7 +8,7 @@ import {
   Delete,
   UseGuards,
   UseInterceptors,
-  UploadedFile,
+  UploadedFile, Query
 } from "@nestjs/common";
 import { ProductsService } from './products.service';
 import {JwtAuthGuard} from "../../guards/jwt.guard";
@@ -34,8 +34,18 @@ export class ProductsController {
   }
 
   @Get()
-  findAll() {
-    return this.productsService.findAll();
+  async findAll(@Query('id') id: string) {
+    try {
+      if (id) {
+        const product = await this.productsService.findById(id);
+        return product ? { data: product } : { message: 'Продукт не найден' };
+      } else {
+        const products = await this.productsService.findAll();
+        return { data: products };
+      }
+    } catch (error) {
+      return { error: 'Произошла ошибка при обработке запроса' };
+    }
   }
 
   @Get(':id')

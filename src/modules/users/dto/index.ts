@@ -66,11 +66,6 @@ export class CreateUserDTO {
     @IsString()
     @IsOptional()
     avatar?: string
-
-    @IsArray()
-    @IsString({ each: true })
-    @IsOptional()
-    images?: string[];
 }
 
 export class UpdateUserDTO {
@@ -104,10 +99,6 @@ export class UpdateUserDTO {
     @IsString()
     @IsOptional()
     avatar?: string
-
-    @IsArray()
-    @IsString({ each: true })
-    images?: string[];
 }
 
 

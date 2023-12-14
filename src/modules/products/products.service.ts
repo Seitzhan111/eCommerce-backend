@@ -47,6 +47,11 @@ export class ProductsService {
     return await this.productRepository.findAll()
   }
 
+  async findById(id: string): Promise<any | undefined> {
+    const product = await this.productRepository.findAll({ where: { id: id } });
+    return Promise.resolve(product);
+  }
+
   async findOne(id: number) {
     return await this.productRepository.findAll({where: {id}})
   }

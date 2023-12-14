@@ -34,6 +34,7 @@ import { Blog } from "../blogs/models/blog.model";
 import { BlogsModule } from "../blogs/blogs.module";
 import { AuthService } from "../auth/auth.service";
 import { JwtModule } from "@nestjs/jwt";
+import * as session from 'express-session';
 
 @Module({
   imports: [
