@@ -1,7 +1,7 @@
 import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
 import {Role} from "../../roles/models/roles.model";
 import {UserRoles} from "../../roles/models/user-roles.model";
-import { OrderDetail } from "../../order-detail/models/order-detail.model";
+import { OrderDetail } from "../../order/models/order-detail.model";
 import { IsOptional } from "class-validator";
 
 @Table
@@ -55,6 +55,4 @@ export class User extends Model {
     @Column(DataType.STRING)
     avatar?: string
 
-    @HasMany(() => OrderDetail)
-    orderDetails: OrderDetail[];
 }

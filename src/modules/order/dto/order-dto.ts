@@ -1,16 +1,20 @@
-import { IsEnum, IsArray, IsOptional, IsNotEmpty } from "class-validator";
-import { CreateDeliveryDto } from "../../delivery/dto";
+import { IsEnum, IsArray, IsOptional } from "class-validator";
+import { CreateDeliveryDto } from "./delivery-dto";
 import { Orders_status } from "../models/order.model";
-import { CreateOrderDetailDto } from "../../order-detail/dto/order-detail.dto";
+import { CreateOrderDetailDto } from "./order-detail.dto";
 
 export class CreateOrderDto {
   @IsEnum(Orders_status)
-  @IsNotEmpty()
-  status: Orders_status;
+  @IsOptional()
+  status?: Orders_status;
 
   @IsArray()
-  orderDetails: CreateOrderDetailDto[];
+  @IsOptional()
+  orderDetails?: CreateOrderDetailDto[];
 
   @IsOptional()
-  delivery: CreateDeliveryDto;
+  delivery?: CreateDeliveryDto;
+
+  @IsOptional()
+  userId: number;
 }

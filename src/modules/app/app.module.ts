@@ -23,18 +23,14 @@ import {RolesModule} from "../roles/roles.module";
 import {UserRoles} from "../roles/models/user-roles.model";
 import { CloudinaryModule } from "../cloudinary/cloudinary.module";
 import { Order } from "../order/models/order.model";
-import { OrderDetail } from "../order-detail/models/order-detail.model";
+import { OrderDetail } from "../order/models/order-detail.model";
 import { OrderModule } from "../order/order.module";
 import { Payment } from "../payment/models/payment.model";
-import { PaymentModule } from "../payment/payment.module";
-import { Delivery } from "../delivery/models/delivery.model";
-import { DeliveryModule } from "../delivery/delivery.module";
-import { OrderDetailModule } from "../order-detail/order-detail.module";
+import { Delivery } from "../order/models/delivery.model";
 import { Blog } from "../blogs/models/blog.model";
 import { BlogsModule } from "../blogs/blogs.module";
 import { AuthService } from "../auth/auth.service";
 import { JwtModule } from "@nestjs/jwt";
-import * as session from 'express-session';
 
 @Module({
   imports: [
@@ -67,9 +63,6 @@ import * as session from 'express-session';
     RolesModule,
     CloudinaryModule,
     OrderModule,
-    PaymentModule,
-    DeliveryModule,
-    OrderDetailModule,
     BlogsModule,
     JwtModule
   ],

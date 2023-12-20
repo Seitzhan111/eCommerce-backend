@@ -1,6 +1,7 @@
-import { Table, Model, Column, DataType, HasMany, HasOne } from "sequelize-typescript";
-import { OrderDetail } from "../../order-detail/models/order-detail.model";
-import { Delivery } from "../../delivery/models/delivery.model";
+import { Table, Model, Column, DataType, HasMany, HasOne, ForeignKey, BelongsTo } from "sequelize-typescript";
+import { OrderDetail } from "./order-detail.model";
+import { Delivery } from "./delivery.model";
+import { User } from "../../users/models/user.model";
 
 export enum Orders_status {
   PENDING = 'pending',
@@ -23,4 +24,11 @@ export class Order extends Model {
 
   @HasOne(() => Delivery)
   delivery: Delivery;
+
+  @ForeignKey(() => User)
+  @Column
+  userId: number;
+
+  @BelongsTo(() => User)
+  user: User;
 }

@@ -6,6 +6,7 @@ import {UsersService} from "../modules/users/users.service";
 import {CreateUserDTO} from "../modules/users/dto";
 import { AuthService } from "../modules/auth/auth.service";
 import { AuthUserResponse } from "../modules/auth/response";
+import { User } from "../modules/users/models/user.model";
 
 
 @Injectable()
@@ -29,10 +30,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
         done: VerifyCallback,
     ): Promise<any> {
         try {
-            const existingUserByEmail = await this.usersService.findUserByEmail(profile.emails[0].value);
-            const existingUserByUsername = await this.usersService.findUserByUsername(profile.displayName);
+            let existUser: User | null;
+            if (profile.emails[0].value || profile.displayName) existUser = await this.usersService.findUserByIdentifier(profile.emails[0].value || profile.displayName)
 
-            if (existingUserByEmail || existingUserByUsername) {
+            if (existUser) {
                 const userLogin: AuthUserResponse = await this.authService.loginUser({
                     email: profile.emails[0].value,
                     username: profile.displayName,
