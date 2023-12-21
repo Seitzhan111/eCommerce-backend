@@ -4,6 +4,7 @@ import { Order } from "./models/order.model";
 import { CreateOrderDto } from "./dto/order-dto";
 import { OrderDetail } from "./models/order-detail.model";
 import { Delivery } from "./models/delivery.model";
+import { Product } from "../products/models/product.model";
 
 @Injectable()
 export class OrderService {
@@ -19,6 +20,7 @@ export class OrderService {
   async createOrder(createOrderDto: CreateOrderDto, userId: number) {
     const { status, orderDetails, delivery } = createOrderDto;
 
+
     const transaction = await this.orderModel.sequelize.transaction();
 
     try {
@@ -27,9 +29,9 @@ export class OrderService {
           status,
           userId,
           orderDetails: orderDetails.map((detail) => ({
-            productId: detail.productId,
+            product: detail.product,
             quantity: detail.quantity,
-            price: detail.price,
+            totalPrice: detail.totalPrice,
           })),
           delivery: {
             deliveryAddress: delivery.deliveryAddress,
@@ -40,12 +42,21 @@ export class OrderService {
         },
         {
           include: [
-            { model: this.orderDetailModel, as: 'orderDetails' },
-            { model: this.deliveryModel, as: 'delivery' },
+            {
+              model: this.orderDetailModel,
+              as: 'orderDetails',
+              attributes: { exclude: ['createdAt', 'updatedAt'] },
+            },
+            {
+              model: this.deliveryModel,
+              as: 'delivery',
+              attributes: { exclude: ['createdAt', 'updatedAt'] },
+            },
           ],
           transaction,
         },
       );
+
 
       await transaction.commit();
 

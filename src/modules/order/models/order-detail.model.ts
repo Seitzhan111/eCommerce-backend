@@ -1,12 +1,20 @@
-import { Table, Model, Column, ForeignKey, BelongsTo } from "sequelize-typescript";
+import { Table, Model, Column, ForeignKey, BelongsTo, DataType } from "sequelize-typescript";
 import { Product } from "../../products/models/product.model";
 import { Order } from "./order.model";
 
-@Table
+@Table({
+  defaultScope: {
+    attributes: {
+      exclude: ['createdAt', 'updatedAt'],
+    },
+  },
+})
 export class OrderDetail extends Model {
   @ForeignKey(() => Product)
-  @Column
-  productId: number;
+  @Column({
+    type: DataType.JSON,
+  })
+  product: Product;
 
   @ForeignKey(() => Order)
   @Column
@@ -16,10 +24,7 @@ export class OrderDetail extends Model {
   quantity: number;
 
   @Column
-  price: number;
-
-  @BelongsTo(() => Product)
-  product: Product;
+  totalPrice: number;
 
   @BelongsTo(() => Order)
   order: Order;

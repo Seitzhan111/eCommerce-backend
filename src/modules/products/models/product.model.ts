@@ -43,7 +43,4 @@ export class Product extends Model {
         type: DataType.ENUM(...Object.values(ProductStatus)),
     })
     status: ProductStatus;
-
-    @Column(DataType.INTEGER)
-    quantity: number;
 }

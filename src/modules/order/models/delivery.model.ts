@@ -1,7 +1,13 @@
 import { Table, Model, Column, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { Order } from "./order.model";
 
-@Table
+@Table({
+  defaultScope: {
+    attributes: {
+      exclude: ['createdAt', 'updatedAt'],
+    },
+  },
+})
 export class Delivery extends Model {
   @ForeignKey(() => Order)
   @Column

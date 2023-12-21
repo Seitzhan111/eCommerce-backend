@@ -1,8 +1,10 @@
-import { IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsObject, IsPositive } from "class-validator";
+import { Product } from "../../products/models/product.model";
 
 export class CreateOrderDetailDto {
+  @IsObject()
   @IsNotEmpty()
-  productId: number;
+  product: Product;
 
   @IsNumber()
   @IsPositive()
@@ -10,5 +12,5 @@ export class CreateOrderDetailDto {
 
   @IsNumber()
   @IsPositive()
-  price: number;
+  totalPrice: number;
 }
