@@ -14,8 +14,13 @@ export class CallRequestService {
     phoneNumber: string;
     callbackTime?: Date;
     comment?: string;
-  }): Promise<CallRequest> {
-    return this.callRequestModel.create(data);
+  }): Promise<{message: string}> {
+    try {
+      await this.callRequestModel.create(data);
+      return {message: 'Мы вам перезвоним!'}
+    }catch (error) {
+      throw new Error(error)
+    }
   }
 
   async getAllCallRequests(): Promise<CallRequest[]> {

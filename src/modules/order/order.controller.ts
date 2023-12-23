@@ -1,7 +1,19 @@
-import { Controller, Post, Body, HttpException, HttpStatus, UseGuards } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Body,
+  HttpException,
+  HttpStatus,
+  UseGuards,
+  Get,
+  Param,
+  NotFoundException, ParseIntPipe, Patch
+} from "@nestjs/common";
 import { OrderService } from './order.service';
 import { CreateOrderDto } from "./dto/order-dto";
 import { JwtAuthGuard } from "../../guards/jwt.guard";
+import { Category } from "../category/models/category.model";
+import { Order } from "./models/order.model";
 
 @Controller('orders')
 export class OrderController {
@@ -17,5 +29,39 @@ export class OrderController {
     }
 
     return this.orderService.createOrder(createOrderDto, userId);
+  }
+
+  @Get()
+  async getAllOrders() {
+    return this.orderService.getAllOrders();
+  }
+
+  @Get(':id')
+  async getOrder(@Param('id') orderId: number) {
+    return this.orderService.getOrderById(orderId);
+  }
+
+  @Post(':orderId/payment')
+  async payment(@Param('orderId') orderId: number) {
+    try {
+      await this.orderService.payment(orderId);
+      return { message: 'Оплата произведена успешно!' };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return { message: 'Заказ не найден', error: error.message };
+      }
+      return { message: 'Ошибка с оплатой', error: error.message };
+    }
+  }
+  @Patch(':id/cancel')
+  async cancelOrder(@Param('id', ParseIntPipe) orderId: number) {
+    await this.orderService.cancelOrder(orderId);
+    return { message: 'Заказ успешно отменен!' };
+  }
+
+  @Patch(':id/shipped')
+  async markOrderAsShipped(@Param('id', ParseIntPipe) orderId: number) {
+    await this.orderService.markOrderAsShipped(orderId);
+    return { message: 'Заказ успешно отправлен' };
   }
 }
