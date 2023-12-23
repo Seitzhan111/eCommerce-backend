@@ -8,7 +8,7 @@ import {
   Delete,
   UseGuards,
   UseInterceptors,
-  UploadedFile, Query
+  UploadedFile, Query, NotFoundException, InternalServerErrorException
 } from "@nestjs/common";
 import { ProductsService } from './products.service';
 import {JwtAuthGuard} from "../../guards/jwt.guard";
@@ -23,6 +23,23 @@ import { RolesGuard } from "../../guards/roles.guard";
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
+
+
+  @Get('search')
+  async searchProducts(@Query('query') query: string) {
+    try {
+      console.log('Received query in controller:', query);
+      const products = await this.productsService.searchProducts(query);
+      return products;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        console.error('Error in searchProducts:', error);
+        throw new InternalServerErrorException();
+      }
+    }
+  }
 
   @ApiTags('API')
   @ApiResponse({status: 201, type: ProductDTO})

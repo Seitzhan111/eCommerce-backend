@@ -31,6 +31,8 @@ import { Blog } from "../blogs/models/blog.model";
 import { BlogsModule } from "../blogs/blogs.module";
 import { AuthService } from "../auth/auth.service";
 import { JwtModule } from "@nestjs/jwt";
+import { CallRequest } from "../call-request/models/call-request.model";
+import { CallRequestModule } from "../call-request/call-request.module";
 
 @Module({
   imports: [
@@ -50,7 +52,7 @@ import { JwtModule } from "@nestjs/jwt";
         database: configService.get('db_name'),
         synchronize: true,
         autoLoadModels: true,
-        models: [User, Category, Product, Role, UserRoles, Order, OrderDetail, Payment, Delivery, Blog],
+        models: [User, Category, Product, Role, UserRoles, Order, OrderDetail, Payment, Delivery, Blog, CallRequest],
       })
     }),
     UsersModule,
@@ -64,7 +66,8 @@ import { JwtModule } from "@nestjs/jwt";
     CloudinaryModule,
     OrderModule,
     BlogsModule,
-    JwtModule
+    JwtModule,
+    CallRequestModule
   ],
   controllers: [ResetPasswordController],
   providers: [ResetPasswordService, JwtStrategy, FacebookStrategy, VkStrategy, GoogleStrategy, AuthService],

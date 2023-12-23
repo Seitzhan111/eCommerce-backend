@@ -2,6 +2,7 @@ import { Table, Model, Column, ForeignKey, BelongsTo } from 'sequelize-typescrip
 import { Order } from "./order.model";
 
 @Table({
+  timestamps: false,
   defaultScope: {
     attributes: {
       exclude: ['createdAt', 'updatedAt'],

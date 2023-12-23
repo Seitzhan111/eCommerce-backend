@@ -3,6 +3,7 @@ import { Product } from "../../products/models/product.model";
 import { Order } from "./order.model";
 
 @Table({
+  timestamps: false,
   defaultScope: {
     attributes: {
       exclude: ['createdAt', 'updatedAt'],

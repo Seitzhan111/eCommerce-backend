@@ -1,9 +1,10 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
 import {Product} from "./models/product.model";
 import {ProductDTO, ProductUpdateDTO} from "./dto";
 import { MulterFile } from 'multer';
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { Op } from "sequelize";
 
 @Injectable()
 export class ProductsService {
@@ -12,6 +13,31 @@ export class ProductsService {
       private readonly productRepository: typeof Product,
       private readonly cloudinaryService: CloudinaryService,
   ) {}
+
+  async searchProducts(query: string): Promise<Product[]> {
+    const products = await this.productRepository.findAll({
+      where: {
+        [Op.or]: [
+          {
+            name: {
+              [Op.iLike]: `%${query}%`,
+            },
+          },
+          {
+            description: {
+              [Op.iLike]: `%${query}%`,
+            },
+          },
+        ],
+      },
+    });
+
+    if (!products || products.length === 0) {
+      throw new NotFoundException('Продукт не найден');
+    }
+
+    return products;
+  }
 
   async create(dto: ProductDTO): Promise<Product> {
     try {
