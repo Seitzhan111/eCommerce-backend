@@ -95,7 +95,7 @@ export class UsersService {
                 role: dto.role
             })
 
-            const role = await this.roleService.getRoleByValue("ADMIN")
+            const role = await this.roleService.getRoleByValue("USER")
             await user.$set('roles', [role.id]);
             user.roles = [role];
 

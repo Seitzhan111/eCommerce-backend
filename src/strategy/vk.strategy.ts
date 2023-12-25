@@ -43,7 +43,6 @@ export class VkStrategy extends PassportStrategy(Strategy, "vkontakte") {
                     confirmationCode: null,
                     isConfirmed: true,
                     isSocialRegistration: true,
-                    role: null
                 });
 
                 done(null, newUser);

@@ -25,7 +25,6 @@ import { CloudinaryModule } from "../cloudinary/cloudinary.module";
 import { Order } from "../order/models/order.model";
 import { OrderDetail } from "../order/models/order-detail.model";
 import { OrderModule } from "../order/order.module";
-import { Payment } from "../payment/models/payment.model";
 import { Delivery } from "../order/models/delivery.model";
 import { Blog } from "../blogs/models/blog.model";
 import { BlogsModule } from "../blogs/blogs.module";
@@ -52,7 +51,7 @@ import { CallRequestModule } from "../call-request/call-request.module";
         database: configService.get('db_name'),
         synchronize: true,
         autoLoadModels: true,
-        models: [User, Category, Product, Role, UserRoles, Order, OrderDetail, Payment, Delivery, Blog, CallRequest],
+        models: [User, Category, Product, Role, UserRoles, Order, OrderDetail, Delivery, Blog, CallRequest],
       })
     }),
     UsersModule,

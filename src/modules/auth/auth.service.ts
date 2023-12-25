@@ -41,7 +41,6 @@ export class AuthService {
       }else {
         return this.userService.createUser(dto)
       }
-
     }catch (error) {
       throw error;
     }

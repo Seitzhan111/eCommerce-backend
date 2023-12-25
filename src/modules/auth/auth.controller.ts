@@ -55,14 +55,38 @@ export class AuthController {
 
   @UseGuards(GoogleGuard)
   @Get('google/login')
-  async googleLogin() {
-    return {msg: 'Google Authentication'}
+  googleLogin(@Res() res: Response) {
+    (res as any).redirect('http://localhost:4430/auth/google/login');
   }
 
   @UseGuards(GoogleGuard)
   @Get('google/callback')
-  async googleCallback(@Req() req, @Res() res: Response) {
-    (res as any).redirect('http://localhost:3000');
+  async googleCallback(@Req() req: Request, @Res() res: Response): Promise<void> {
+    try {
+      const user = req['user']; // Получение пользователя из успешной аутентификации
+      if (!user) {
+        throw new Error('Пользователь не найден');
+      }
+
+      // Редирект на промежуточный маршрут
+      (res as any).redirect('http://localhost:3000');
+    } catch (error) {
+      // Обработка ошибок аутентификации
+      console.error('Google Authentication Error:', error);
+      (res as any).redirect('http://localhost:3000/auth/error');
+    }
+  }
+
+  @Get('auth/success')
+  async successRedirect(@Res() res: Response): Promise<void> {
+    // Редирект с фронтенда после успешной аутентификации
+    (res as any).redirect('http://localhost:3000/success');
+  }
+
+  @Get('auth/error')
+  async errorRedirect(@Res() res: Response): Promise<void> {
+    // Редирект с фронтенда при ошибке аутентификации
+    (res as any).redirect('http://localhost:3000/error');
   }
 
   @UseGuards(FacebookGuard)

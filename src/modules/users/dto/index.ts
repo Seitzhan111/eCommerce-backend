@@ -57,11 +57,12 @@ export class CreateUserDTO {
     @IsOptional()
     isSocialRegistration?: boolean;
 
+    @IsOptional()
     @ApiProperty({
-        default: 'user',
-        description: 'User role (user or admin)',
+        default: 'USER'
     })
-    role: 'user' | 'admin';
+    @IsOptional()
+    role?: 'USER' | 'ADMIN';
 
     @IsString()
     @IsOptional()

@@ -104,7 +104,7 @@ export class OrderService {
     }
   }
 
-  async payment(orderId: number): Promise<void> {
+  async payment(orderId: number): Promise<{ message: string }> {
     try {
       const order = await this.orderModel.findByPk(orderId);
 
@@ -114,6 +114,14 @@ export class OrderService {
       if (order.status === Orders_status.PENDING) {
         order.status = Orders_status.PAID;
         await order.save();
+
+        await new Promise((resolve) => {
+          setTimeout(async () => {
+            await order.update({ status: Orders_status.SHIPPED });
+            resolve(undefined);
+          }, 5000);
+        });
+        return { message: 'Заказ успешно оплачен. Ваш товар будет отправлен в ближайшее время.' };
       } else {
         throw new NotFoundException('Нет ожидающего заказа');
       }
@@ -130,7 +138,7 @@ export class OrderService {
         throw new NotFoundException('Заказ не найден');
       }
 
-      if (order.status !== Orders_status.PAID) {
+      if (order.status === Orders_status.PAID) {
         throw new BadRequestException('После оплаты невозможно отменить заказ!');
       }
       await order.update({ status: Orders_status.CANCELLED });
@@ -148,7 +156,9 @@ export class OrderService {
       if (order.status == Orders_status.PAID) {
         throw new BadRequestException('Заказ не может быть отправлен до оплаты');
       }
-      await order.update({ status: Orders_status.SHIPPED });
+      setTimeout(async () => {
+        await order.update({ status: Orders_status.SHIPPED });
+      }, 5000);
     }catch (error) {
       throw new Error(error)
     }

@@ -41,11 +41,11 @@ export class OrderController {
     return this.orderService.getOrderById(orderId);
   }
 
-  @Post(':orderId/payment')
+  @Patch(':orderId/payment')
   async payment(@Param('orderId') orderId: number) {
     try {
-      await this.orderService.payment(orderId);
-      return { message: 'Оплата произведена успешно!' };
+      const paymentResult = await this.orderService.payment(orderId);
+      return paymentResult
     } catch (error) {
       if (error instanceof NotFoundException) {
         return { message: 'Заказ не найден', error: error.message };
