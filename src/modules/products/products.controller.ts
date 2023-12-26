@@ -8,7 +8,7 @@ import {
   Delete,
   UseGuards,
   UseInterceptors,
-  UploadedFile, Query, NotFoundException, InternalServerErrorException
+  UploadedFile, Query, NotFoundException, InternalServerErrorException, HttpStatus, HttpException, Req
 } from "@nestjs/common";
 import { ProductsService } from './products.service';
 import {JwtAuthGuard} from "../../guards/jwt.guard";
@@ -41,13 +41,32 @@ export class ProductsController {
     }
   }
 
-  @ApiTags('API')
-  @ApiResponse({status: 201, type: ProductDTO})
+  @ApiResponse({ status: 201, type: ProductDTO })
   @Roles('ADMIN')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
-  create(@Body() dto: ProductDTO): Promise<Product> {
-    return this.productsService.create(dto);
+  async create(@Body() dto: ProductDTO, @Req() req: any): Promise<Product> {
+    try {
+      const jsonBody: ProductDTO = dto;
+      const files = req.files;
+
+      if (!files || Object.keys(files).length === 0) {
+        throw new HttpException('Изображения не были загружены', HttpStatus.BAD_REQUEST);
+      }
+
+      const images = await Promise.all(files.map(async (file: any) => {
+        return await this.productsService.uploadImages(file)
+      }));
+
+      const combinedData: ProductDTO & { images: string[] } = {
+        ...jsonBody,
+        images: images || [],
+      };
+
+      return this.productsService.create(combinedData);
+    } catch (error) {
+      throw new HttpException(error.message || 'Ошибка при обработке изображений', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Get()

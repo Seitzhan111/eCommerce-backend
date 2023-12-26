@@ -39,21 +39,30 @@ export class ProductsService {
     return products;
   }
 
+  async uploadImages(images: MulterFile[]): Promise<string[]> {
+    const uploadedImages = [];
+
+    for (const image of images) {
+      const imageUrl = await this.cloudinaryService.upload(image);
+      uploadedImages.push(imageUrl);
+    }
+
+    return uploadedImages;
+  }
+
   async create(dto: ProductDTO): Promise<Product> {
     try {
       const isExist = await this.productRepository.findOne({
-        where: {name: dto.name}
-      })
-      if (isExist) throw new BadRequestException('Продукт с таким названием уже существует!')
+        where: { name: dto.name }
+      });
 
-      const images = [];
-
-      if (dto.images && dto.images.length > 0) {
-        for (const image of dto.images) {
-          const imageUrl = await this.cloudinaryService.upload(image);
-          images.push(imageUrl);
-        }
+      if (isExist) {
+        throw new BadRequestException('Продукт с таким названием уже существует!');
       }
+
+      const images = dto.images && dto.images.length > 0
+        ? await this.uploadImages(dto.images)
+        : [];
 
       const newProduct = {
         name: dto.name,
@@ -62,12 +71,32 @@ export class ProductsService {
         images: images.length > 0 ? images : null,
         sales: dto.sales || null,
         categoryId: dto.categoryId
-      }
-      return await this.productRepository.create(newProduct)
-    }catch (error) {
+      };
+
+      return await this.productRepository.create(newProduct);
+    } catch (error) {
       throw new BadRequestException(error);
     }
   }
+
+  async uploadImage(id: string, image: MulterFile): Promise<any> {
+    try {
+      const product = await this.productRepository.findOne({ where: { id } });
+
+      if (!product) {
+        throw new Error('Продукт не найден!');
+      }
+
+      const imagePath = await this.cloudinaryService.upload(image);
+      product.images = [...(product.images || []), imagePath];
+      await product.save();
+
+      return { message: 'Картинка успешно загрузилась!', imagePath };
+    } catch (error) {
+      throw new Error('Ошибка при загрузке картинки!');
+    }
+  }
+
 
   async findAll(): Promise<Product[]> {
     return await this.productRepository.findAll()
@@ -104,26 +133,6 @@ export class ProductsService {
       return { message: `Продукт с идентификатором ${id} успешно удален.` };
     }catch (error) {
       throw new BadRequestException(error);
-    }
-  }
-
-
-  async uploadImage(id: string, image: MulterFile): Promise<any> {
-    try {
-      const product = await this.productRepository.findOne({where: {id}});
-
-      if (!product) {
-        throw new Error('Продукт не найден!');
-      }
-
-      const imagePath = await this.cloudinaryService.upload(image);
-
-      product.images = [...(product.images || []), imagePath];
-      await product.save();
-
-      return { message: 'Картинка успешно загрузилась!', imagePath };
-    } catch (error) {
-      throw new Error('Ошибка при загрузке картинки!');
     }
   }
 
