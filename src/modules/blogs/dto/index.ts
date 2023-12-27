@@ -10,5 +10,5 @@ export class BlogDTO {
   content: string
 
   @IsOptional()
-  images?: string[]
+  image?: string
 }

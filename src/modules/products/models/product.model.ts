@@ -24,10 +24,8 @@ export class Product extends Model {
     @Column(DataType.INTEGER)
     price: number
 
-    @Column({
-        type: DataType.ARRAY(DataType.STRING),
-    })
-    images: string[]
+    @Column(DataType.STRING)
+    image?: string
 
     @Column(DataType.BOOLEAN)
     sales: boolean

@@ -28,7 +28,6 @@ export class ProductsController {
   @Get('search')
   async searchProducts(@Query('query') query: string) {
     try {
-      console.log('Received query in controller:', query);
       const products = await this.productsService.searchProducts(query);
       return products;
     } catch (error) {
@@ -45,27 +44,11 @@ export class ProductsController {
   @Roles('ADMIN')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
-  async create(@Body() dto: ProductDTO, @Req() req: any): Promise<Product> {
+  async create(@Body() dto: ProductDTO): Promise<Product> {
     try {
-      const jsonBody: ProductDTO = dto;
-      const files = req.files;
-
-      if (!files || Object.keys(files).length === 0) {
-        throw new HttpException('Изображения не были загружены', HttpStatus.BAD_REQUEST);
-      }
-
-      const images = await Promise.all(files.map(async (file: any) => {
-        return await this.productsService.uploadImages(file)
-      }));
-
-      const combinedData: ProductDTO & { images: string[] } = {
-        ...jsonBody,
-        images: images || [],
-      };
-
-      return this.productsService.create(combinedData);
+      return this.productsService.create(dto);
     } catch (error) {
-      throw new HttpException(error.message || 'Ошибка при обработке изображений', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(error.message || 'Ошибка при создании продукта', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -130,11 +113,11 @@ export class ProductsController {
   @ApiResponse({status: 200})
   @Roles('ADMIN')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Delete(':id/images/:index')
+  @Delete(':id/image')
   async deleteImage(
     @Param('id') productId: number,
     @Param('index') imageIndex: number,
   ): Promise<{ message: string }> {
-    return this.productsService.deleteImage(productId, imageIndex);
+    return this.productsService.deleteImage(productId);
   }
 }

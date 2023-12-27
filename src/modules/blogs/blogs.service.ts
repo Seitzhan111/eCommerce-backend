@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Blog } from "./models/blog.model";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
@@ -18,7 +18,7 @@ export class BlogsService {
       const newBlog = {
         title: dto.title,
         content: dto.content,
-        images: dto.images || null,
+        image: dto.image || null,
       }
       return await this.blogRepository.create(newBlog)
     }catch (error) {
@@ -57,43 +57,46 @@ export class BlogsService {
 
   async uploadImage(id: string, image: MulterFile): Promise<any> {
     try {
-      const blog = await this.blogRepository.findOne({where: {id}});
+      const blog = await this.blogRepository.findByPk(id);
 
       if (!blog) {
-        throw new Error('Блог не найден!');
+        throw new NotFoundException('Блог не найден!');
       }
 
       const imagePath = await this.cloudinaryService.upload(image);
 
-      blog.images = [...(blog.images || []), imagePath];
+      blog.image = imagePath;
+
       await blog.save();
 
       return { message: 'Картинка успешно загрузилась!', imagePath };
     } catch (error) {
-      throw new Error('Ошибка при загрузке картинки!');
+      throw new NotFoundException('Ошибка при загрузке картинки!');
     }
   }
 
-  async deleteImage(blogId: number, imageIndex: number): Promise<{ message: string }> {
+  async deleteImage(blogId: number): Promise<{ message: string }> {
     try {
       const blog = await this.blogRepository.findByPk(blogId);
       if (!blog) {
-        throw new Error('Блог не найден!');
+        throw new NotFoundException('Блог не найден!');
       }
-      const images = blog.images || [];
-      if (images.length > 0 && imageIndex >= 0 && imageIndex < images.length) {
-        await this.cloudinaryService.delete(images[imageIndex]);
-        images.splice(imageIndex, 1);
-        blog.images = images;
-        await this.blogRepository.update({ images }, { where: { id: blogId } });
+
+      // Удаляем изображение
+      if (blog.image) {
+        await this.cloudinaryService.delete(blog.image);
+        blog.image = null; // Устанавливаем поле image в null
+
+        await blog.save();
+
         return { message: 'Изображение успешно удалено!' };
       } else {
-        console.warn('Invalid index or empty array. No action taken.');
-        return { message: 'Неверный индекс или пустой массив. Не выполнено никаких действий.' };
+        console.warn('No image to delete.');
+        return { message: 'Нет изображения для удаления.' };
       }
     } catch (error) {
-      console.error('Error while saving product:', error);
-      throw new Error('Ошибка при сохранении продукта!');
+      console.error('Error while deleting image:', error);
+      throw new NotFoundException('Ошибка при удалении изображения!');
     }
   }
 }

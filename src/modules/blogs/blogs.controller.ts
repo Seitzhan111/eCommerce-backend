@@ -5,8 +5,8 @@ import {
   Get,
   Param,
   Patch,
-  Post,
-  UploadedFile,
+  Post, Put, Req,
+  UploadedFile, UploadedFiles,
   UseGuards,
   UseInterceptors
 } from "@nestjs/common";
@@ -84,11 +84,11 @@ export class BlogsController {
   @ApiResponse({status: 200})
   @Roles('ADMIN')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Delete(':id/images/:index')
+  @Delete(':id/image')
   async deleteImage(
     @Param('id') blogId: number,
     @Param('index') imageIndex: number,
   ): Promise<{ message: string }> {
-    return this.blogsService.deleteImage(blogId, imageIndex);
+    return this.blogsService.deleteImage(blogId);
   }
 }

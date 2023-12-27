@@ -19,7 +19,7 @@ export class ProductDTO {
 
     @ApiProperty()
     @IsOptional()
-    images?: string[]
+    image?: string
 
     @ApiProperty()
     @IsBoolean()
@@ -58,7 +58,7 @@ export class ProductUpdateDTO {
 
     @ApiProperty()
     @IsOptional()
-    images?: string[]
+    image?: string
 
     @ApiProperty()
     @IsBoolean()

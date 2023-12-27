@@ -60,15 +60,11 @@ export class ProductsService {
         throw new BadRequestException('Продукт с таким названием уже существует!');
       }
 
-      const images = dto.images && dto.images.length > 0
-        ? await this.uploadImages(dto.images)
-        : [];
-
       const newProduct = {
         name: dto.name,
         description: dto.description,
         price: dto.price,
-        images: images.length > 0 ? images : null,
+        image: null,
         sales: dto.sales || null,
         categoryId: dto.categoryId
       };
@@ -81,19 +77,21 @@ export class ProductsService {
 
   async uploadImage(id: string, image: MulterFile): Promise<any> {
     try {
-      const product = await this.productRepository.findOne({ where: { id } });
+      const product = await this.productRepository.findByPk(id);
 
       if (!product) {
-        throw new Error('Продукт не найден!');
+        throw new NotFoundException('Продукт не найден!');
       }
 
       const imagePath = await this.cloudinaryService.upload(image);
-      product.images = [...(product.images || []), imagePath];
+
+      product.image = imagePath;
+
       await product.save();
 
       return { message: 'Картинка успешно загрузилась!', imagePath };
     } catch (error) {
-      throw new Error('Ошибка при загрузке картинки!');
+      throw new BadRequestException('Ошибка при загрузке картинки!');
     }
   }
 
@@ -136,26 +134,27 @@ export class ProductsService {
     }
   }
 
-  async deleteImage(productId: number, imageIndex: number): Promise<{ message: string }> {
+  async deleteImage(productId: number): Promise<{ message: string }> {
     try {
       const product = await this.productRepository.findByPk(productId);
       if (!product) {
-        throw new Error('Продукт не найден!');
+        throw new NotFoundException('Продукт не найден!');
       }
-      const images = product.images || [];
-      if (images.length > 0 && imageIndex >= 0 && imageIndex < images.length) {
-        await this.cloudinaryService.delete(images[imageIndex]);
-        images.splice(imageIndex, 1);
-        product.images = images;
-        await this.productRepository.update({ images }, { where: { id: productId } });
+
+      const imagePath = product.image;
+
+      if (imagePath) {
+        await this.cloudinaryService.delete(imagePath);
+        product.image = null;
+        await product.save();
         return { message: 'Изображение успешно удалено!' };
       } else {
-        console.warn('Invalid index or empty array. No action taken.');
-        return { message: 'Неверный индекс или пустой массив. Не выполнено никаких действий.' };
+        console.warn('No image to delete. No action taken.');
+        return { message: 'Нет изображения для удаления. Не выполнено никаких действий.' };
       }
-    }  catch (error) {
-      console.error('Error while saving product:', error);
-      throw new Error('Ошибка при сохранении продукта!');
+    } catch (error) {
+      console.error('Error while deleting image:', error);
+      throw new BadRequestException('Ошибка при удалении изображения!');
     }
   }
 }

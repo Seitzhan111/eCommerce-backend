@@ -8,8 +8,6 @@ export class Blog extends Model<Blog> {
   @Column
   content: string;
 
-  @Column({
-    type: DataType.ARRAY(DataType.STRING),
-  })
-  images: string[]
+  @Column(DataType.STRING)
+  image?: string
 }
